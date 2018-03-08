@@ -52,7 +52,6 @@ final class Application extends BaseApplication
         $this->toolInfo = new ToolInfo();
 
         // in alphabetical order
-        $this->add(new ShowCommand());
         $this->add(new DescribeCommand());
         $this->add(new FixCommand($this->toolInfo));
         $this->add(new ListFilesCommand($this->toolInfo));
@@ -62,6 +61,7 @@ final class Application extends BaseApplication
             $this->toolInfo,
             new PharChecker()
         ));
+        $this->add(new ShowCommand($this->toolInfo));
     }
 
     public static function getMajorVersion(): int
