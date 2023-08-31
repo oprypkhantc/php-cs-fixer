@@ -40,8 +40,8 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 final class Application extends BaseApplication
 {
-    public const VERSION = '3.23.1-DEV';
-    public const VERSION_CODENAME = 'First Steps';
+    public const VERSION = '3.24.1-DEV';
+    public const VERSION_CODENAME = 'Crank Cake';
 
     private ToolInfo $toolInfo;
 
