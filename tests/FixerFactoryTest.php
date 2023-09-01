@@ -211,6 +211,11 @@ final class FixerFactoryTest extends TestCase
                 return ['header_comment' => []];
             }
 
+            public function getRulesSource(): array
+            {
+                return ['header_comment' => 'config'];
+            }
+
             public function hasRule(string $rule): bool
             {
                 return isset($this->getRules()[$rule]);
