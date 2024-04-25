@@ -26,7 +26,7 @@ final class ClassReferenceNameCasingFixerTest extends AbstractFixerTestCase
     /**
      * @dataProvider provideFixCases
      */
-    public function testFix(string $expected, string $input = null): void
+    public function testFix(string $expected, ?string $input = null): void
     {
         $this->doTest($expected, $input);
     }
@@ -244,6 +244,26 @@ use Sonata\\Exporter\\Writer\\EXCEPTION;
         ];
 
         yield ['<?php echo error ?><?php echo error;'];
+    }
+
+    /**
+     * @dataProvider provideFix80Cases
+     *
+     * @requires PHP 8.0
+     */
+    public function testFix80(string $expected, ?string $input = null): void
+    {
+        $this->doTest($expected, $input);
+    }
+
+    /**
+     * @return iterable<array{0: string, 1?: string}>
+     */
+    public static function provideFix80Cases(): iterable
+    {
+        yield [
+            '<?php if ($var?->exception instanceof Exception) {};',
+        ];
     }
 
     /**

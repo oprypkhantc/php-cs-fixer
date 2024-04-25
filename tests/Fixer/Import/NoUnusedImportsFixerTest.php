@@ -61,8 +61,7 @@ final class NoUnusedImportsFixerTest extends AbstractFixerTestCase
                         /** @var ArrayInterface $bar */
                     }
                 }
-                EOF
-            ,
+                EOF,
             <<<'EOF'
                 <?php
 
@@ -93,8 +92,7 @@ final class NoUnusedImportsFixerTest extends AbstractFixerTestCase
                         /** @var ArrayInterface $bar */
                     }
                 }
-                EOF
-            ,
+                EOF,
         ];
 
         yield 'with_indents' => [
@@ -110,8 +108,7 @@ final class NoUnusedImportsFixerTest extends AbstractFixerTestCase
                 $a = new FooBaz();
                 $a = new SomeClassIndented();
 
-                EOF
-            ,
+                EOF,
             <<<'EOF'
                 <?php
 
@@ -127,8 +124,7 @@ final class NoUnusedImportsFixerTest extends AbstractFixerTestCase
                 $a = new FooBaz();
                 $a = new SomeClassIndented();
 
-                EOF
-            ,
+                EOF,
         ];
 
         yield 'in_same_namespace_1' => [
@@ -147,8 +143,7 @@ final class NoUnusedImportsFixerTest extends AbstractFixerTestCase
                 $d = new Bbb();
                 $e = new FQCN_Babo();
                 $f = new FQCN_XYZ();
-                EOF
-            ,
+                EOF,
             <<<'EOF'
                 <?php
 
@@ -167,25 +162,21 @@ final class NoUnusedImportsFixerTest extends AbstractFixerTestCase
                 $d = new Bbb();
                 $e = new FQCN_Babo();
                 $f = new FQCN_XYZ();
-                EOF
-            ,
+                EOF,
         ];
 
         yield 'in_same_namespace_2' => [
             <<<'EOF'
                 <?php namespace App\Http\Controllers;
 
-
-                EOF
-            ,
+                EOF,
             <<<'EOF'
                 <?php namespace App\Http\Controllers;
 
                 use Illuminate\Http\Request;
                 use App\Http\Controllers\Controller;
 
-                EOF
-            ,
+                EOF,
         ];
 
         yield 'in_same_namespace_multiple_1' => [
@@ -200,8 +191,7 @@ final class NoUnusedImportsFixerTest extends AbstractFixerTestCase
                 $a = new Bar();
                 $b = new Baz();
                 $c = new Baaaaz();
-                EOF
-            ,
+                EOF,
             <<<'EOF'
                 <?php
 
@@ -216,8 +206,7 @@ final class NoUnusedImportsFixerTest extends AbstractFixerTestCase
                 $a = new Bar();
                 $b = new Baz();
                 $c = new Baaaaz();
-                EOF
-            ,
+                EOF,
         ];
 
         yield 'in_same_namespace_multiple_2' => [
@@ -239,8 +228,7 @@ final class NoUnusedImportsFixerTest extends AbstractFixerTestCase
                 $a = new Bar();
                 $b = new Baz();
                 $c = new Baaaaz();
-                EOF
-            ,
+                EOF,
             <<<'EOF'
                 <?php
 
@@ -265,8 +253,7 @@ final class NoUnusedImportsFixerTest extends AbstractFixerTestCase
                 $a = new Bar();
                 $b = new Baz();
                 $c = new Baaaaz();
-                EOF
-            ,
+                EOF,
         ];
 
         yield 'in_same_namespace_multiple_braces' => [
@@ -290,8 +277,7 @@ final class NoUnusedImportsFixerTest extends AbstractFixerTestCase
                     $b = new Baz();
                     $c = new Baaaaz();
                 }
-                EOF
-            ,
+                EOF,
             <<<'EOF'
                 <?php
 
@@ -318,8 +304,7 @@ final class NoUnusedImportsFixerTest extends AbstractFixerTestCase
                     $b = new Baz();
                     $c = new Baaaaz();
                 }
-                EOF
-            ,
+                EOF,
         ];
 
         yield 'multiple_use' => [
@@ -328,13 +313,11 @@ final class NoUnusedImportsFixerTest extends AbstractFixerTestCase
 
                 namespace Foo;
 
-                use BarB, BarC as C, BarD;
                 use BarE;
 
                 $c = new D();
                 $e = new BarE();
-                EOF
-            ,
+                EOF,
 
             <<<'EOF'
                 <?php
@@ -347,11 +330,12 @@ final class NoUnusedImportsFixerTest extends AbstractFixerTestCase
                 use BarB2;
                 use BarB\B2;
                 use BarE;
+                use function fun_a, fun_b, fun_c;
+                use const CONST_A, CONST_B, CONST_C;
 
                 $c = new D();
                 $e = new BarE();
-                EOF
-            ,
+                EOF,
         ];
 
         yield 'with_braces' => [
@@ -367,8 +351,7 @@ final class NoUnusedImportsFixerTest extends AbstractFixerTestCase
                     $c = new Bar\Fooz();
                     $d = new Bbb();
                 }
-                EOF
-            ,
+                EOF,
             <<<'EOF'
                 <?php
 
@@ -383,8 +366,7 @@ final class NoUnusedImportsFixerTest extends AbstractFixerTestCase
                     $c = new Bar\Fooz();
                     $d = new Bbb();
                 }
-                EOF
-            ,
+                EOF,
         ];
 
         yield 'trailing_spaces' => [
@@ -396,8 +378,7 @@ final class NoUnusedImportsFixerTest extends AbstractFixerTestCase
 
                 $a = new Bar();
                 $a = new FooBaz();
-                EOF
-            ,
+                EOF,
             <<<'EOF'
                 <?php
 
@@ -408,8 +389,7 @@ final class NoUnusedImportsFixerTest extends AbstractFixerTestCase
 
                 $a = new Bar();
                 $a = new FooBaz();
-                EOF
-            ,
+                EOF,
         ];
 
         yield 'traits' => [
@@ -425,8 +405,7 @@ final class NoUnusedImportsFixerTest extends AbstractFixerTestCase
                 use MyTrait2;
                     use Bar;
                 }
-                EOF
-            ,
+                EOF,
             <<<'EOF'
                 <?php
 
@@ -440,8 +419,7 @@ final class NoUnusedImportsFixerTest extends AbstractFixerTestCase
                 use MyTrait2;
                     use Bar;
                 }
-                EOF
-            ,
+                EOF,
         ];
 
         yield 'function_use' => [
@@ -454,8 +432,7 @@ final class NoUnusedImportsFixerTest extends AbstractFixerTestCase
                 $a = function ($item) use ($f) {
                     return !in_array($item, $f);
                 };
-                EOF
-            ,
+                EOF,
             <<<'EOF'
                 <?php
 
@@ -466,8 +443,7 @@ final class NoUnusedImportsFixerTest extends AbstractFixerTestCase
                 $a = function ($item) use ($f) {
                     return !in_array($item, $f);
                 };
-                EOF
-            ,
+                EOF,
         ];
 
         yield 'similar_names' => [
@@ -483,8 +459,7 @@ final class NoUnusedImportsFixerTest extends AbstractFixerTestCase
                         $this->repo = $repo;
                     }
                 }
-                EOF
-            ,
+                EOF,
             <<<'EOF'
                 <?php
 
@@ -498,8 +473,7 @@ final class NoUnusedImportsFixerTest extends AbstractFixerTestCase
                         $this->repo = $repo;
                     }
                 }
-                EOF
-            ,
+                EOF,
         ];
 
         yield 'variable_name' => [
@@ -508,16 +482,14 @@ final class NoUnusedImportsFixerTest extends AbstractFixerTestCase
 
 
                 $bar = null;
-                EOF
-            ,
+                EOF,
             <<<'EOF'
                 <?php
 
                 use Foo\Bar;
 
                 $bar = null;
-                EOF
-            ,
+                EOF,
         ];
 
         yield 'property name, method name, static method call, static property' => [
@@ -529,8 +501,7 @@ final class NoUnusedImportsFixerTest extends AbstractFixerTestCase
                 $foo->bar();
                 $foo::bar();
                 $foo::bar;
-                EOF
-            ,
+                EOF,
             <<<'EOF'
                 <?php
 
@@ -540,8 +511,7 @@ final class NoUnusedImportsFixerTest extends AbstractFixerTestCase
                 $foo->bar();
                 $foo::bar();
                 $foo::bar;
-                EOF
-            ,
+                EOF,
         ];
 
         yield 'constant_name' => [
@@ -553,8 +523,7 @@ final class NoUnusedImportsFixerTest extends AbstractFixerTestCase
                 {
                     const BAR = 0;
                 }
-                EOF
-            ,
+                EOF,
             <<<'EOF'
                 <?php
 
@@ -564,8 +533,7 @@ final class NoUnusedImportsFixerTest extends AbstractFixerTestCase
                 {
                     const BAR = 0;
                 }
-                EOF
-            ,
+                EOF,
         ];
 
         yield 'namespace_part' => [
@@ -574,16 +542,14 @@ final class NoUnusedImportsFixerTest extends AbstractFixerTestCase
 
 
                 new \Baz\Bar();
-                EOF
-            ,
+                EOF,
             <<<'EOF'
                 <?php
 
                 use Foo\Bar;
 
                 new \Baz\Bar();
-                EOF
-            ,
+                EOF,
         ];
 
         yield 'use_in_string_1' => [
@@ -594,8 +560,7 @@ final class NoUnusedImportsFixerTest extends AbstractFixerTestCase
                 use b;
                 EOA;
 
-                EOF
-            ,
+                EOF,
         ];
 
         yield 'use_in_string_2' => [
@@ -605,8 +570,7 @@ final class NoUnusedImportsFixerTest extends AbstractFixerTestCase
                 use a;
                 use b;
                 ';
-                EOF
-            ,
+                EOF,
         ];
 
         yield 'use_in_string_3' => [
@@ -616,8 +580,7 @@ final class NoUnusedImportsFixerTest extends AbstractFixerTestCase
                 use a;
                 use b;
                 ";
-                EOF
-            ,
+                EOF,
         ];
 
         yield 'import_in_global_namespace' => [
@@ -626,8 +589,7 @@ final class NoUnusedImportsFixerTest extends AbstractFixerTestCase
                 namespace A;
                 use \SplFileInfo;
                 new SplFileInfo(__FILE__);
-                EOF
-            ,
+                EOF,
         ];
 
         yield 'no_import_in_global_namespace' => [
@@ -635,15 +597,13 @@ final class NoUnusedImportsFixerTest extends AbstractFixerTestCase
                 <?php
                 namespace A;
                 new \SplFileInfo(__FILE__);
-                EOF
-            ,
+                EOF,
             <<<'EOF'
                 <?php
                 namespace A;
                 use SplFileInfo;
                 new \SplFileInfo(__FILE__);
-                EOF
-            ,
+                EOF,
         ];
 
         yield 'no_import_attribute_in_global_namespace' => [
@@ -652,30 +612,26 @@ final class NoUnusedImportsFixerTest extends AbstractFixerTestCase
                 namespace A;
                 #[\Attribute(\Attribute::TARGET_PROPERTY)]
                 final class B {}
-                EOF
-            ,
+                EOF,
             <<<'EOF'
                 <?php
                 namespace A;
                 use Attribute;
                 #[\Attribute(\Attribute::TARGET_PROPERTY)]
                 final class B {}
-                EOF
-            ,
+                EOF,
         ];
 
         yield 'use_as_last_statement' => [
             <<<'EOF'
                 <?php
 
-                EOF
-            ,
+                EOF,
 
             <<<'EOF'
                 <?php
                 use Bar\Finder;
-                EOF
-            ,
+                EOF,
         ];
 
         yield 'use_with_same_last_part_that_is_in_namespace' => [
@@ -685,16 +641,14 @@ final class NoUnusedImportsFixerTest extends AbstractFixerTestCase
                 namespace Foo\Finder;
 
 
-                EOF
-            ,
+                EOF,
             <<<'EOF'
                 <?php
 
                 namespace Foo\Finder;
 
                 use Bar\Finder;
-                EOF
-            ,
+                EOF,
         ];
 
         yield 'used_use_with_same_last_part_that_is_in_namespace' => [
@@ -708,8 +662,7 @@ final class NoUnusedImportsFixerTest extends AbstractFixerTestCase
                 class Baz extends Finder
                 {
                 }
-                EOF
-            ,
+                EOF,
         ];
 
         yield 'foo' => [
@@ -717,13 +670,11 @@ final class NoUnusedImportsFixerTest extends AbstractFixerTestCase
                 <?php
                 namespace Aaa;
 
-
                 class Ddd
                 {
                 }
 
-                EOF
-            ,
+                EOF,
             <<<'EOF'
                 <?php
                 namespace Aaa;
@@ -735,8 +686,7 @@ final class NoUnusedImportsFixerTest extends AbstractFixerTestCase
                 {
                 }
 
-                EOF
-            ,
+                EOF,
         ];
 
         yield 'close_tag_1' => [
@@ -806,8 +756,7 @@ use Baz;
                 {
                 }
 
-                EOF
-            ,
+                EOF,
             <<<'EOF'
                 <?php
 
@@ -821,8 +770,7 @@ use Baz;
                 {
                 }
 
-                EOF
-            ,
+                EOF,
         ];
 
         yield 'with_same_namespace_import_and_unused_import_after_namespace_statement' => [
@@ -837,8 +785,7 @@ use Baz;
                 {
                 }
 
-                EOF
-            ,
+                EOF,
             <<<'EOF'
                 <?php
 
@@ -852,8 +799,7 @@ use Baz;
                 {
                 }
 
-                EOF
-            ,
+                EOF,
         ];
 
         yield 'wrong_casing' => [
@@ -865,8 +811,7 @@ use Baz;
 
                 $a = new FOO();
                 $b = new bar();
-                EOF
-            ,
+                EOF,
         ];
 
         yield 'phpdoc_unused' => [
@@ -881,8 +826,7 @@ use Baz;
                     public function testBar()
                     { }
                 }
-                EOF
-            ,
+                EOF,
             <<<'EOF'
                 <?php
                 use Some\Exception;
@@ -895,8 +839,7 @@ use Baz;
                     public function testBar()
                     { }
                 }
-                EOF
-            ,
+                EOF,
         ];
 
         yield 'imported_class_is_used_for_constants_1' => [
@@ -950,8 +893,7 @@ $b = $a-->ABC::Test;
                 {
                 const C = 'bar-bados';
                 }
-                EOF
-            ,
+                EOF,
             <<<'EOF'
                 <?php
 
@@ -961,8 +903,7 @@ $b = $a-->ABC::Test;
                 {
                 const C = 'bar-bados';
                 }
-                EOF
-            ,
+                EOF,
         ];
 
         yield 'imported_class_name_is_suffix_with_dash_of_constant' => [
@@ -974,8 +915,7 @@ $b = $a-->ABC::Test;
                 {
                     const C = 'tool-bar';
                 }
-                EOF
-            ,
+                EOF,
             <<<'EOF'
                 <?php
 
@@ -985,8 +925,7 @@ $b = $a-->ABC::Test;
                 {
                     const C = 'tool-bar';
                 }
-                EOF
-            ,
+                EOF,
         ];
 
         yield 'imported_class_name_is_inside_with_dash_of_constant' => [
@@ -998,8 +937,7 @@ $b = $a-->ABC::Test;
                 {
                     const C = 'tool-bar-bados';
                 }
-                EOF
-            ,
+                EOF,
             <<<'EOF'
                 <?php
 
@@ -1009,8 +947,7 @@ $b = $a-->ABC::Test;
                 {
                     const C = 'tool-bar-bados';
                 }
-                EOF
-            ,
+                EOF,
         ];
 
         yield 'functions_in_the_global_namespace_should_not_be_removed_even_when_declaration_has_new_lines_and_is_uppercase' => [
@@ -1023,8 +960,7 @@ $b = $a-->ABC::Test;
 
                 is_int(1);
 
-                EOF
-            ,
+                EOF,
             <<<'EOF'
                 <?php
 
@@ -1035,8 +971,7 @@ $b = $a-->ABC::Test;
 
                 is_int(1);
 
-                EOF
-            ,
+                EOF,
         ];
 
         yield 'constants_in_the_global_namespace_should_not_be_removed' => [
@@ -1049,8 +984,7 @@ $b = $a-->ABC::Test;
 
                 echo PHP_INT_MAX;
 
-                EOF
-            ,
+                EOF,
             <<<'EOF'
                 <?php
 
@@ -1061,8 +995,7 @@ $b = $a-->ABC::Test;
 
                 echo PHP_INT_MAX;
 
-                EOF
-            ,
+                EOF,
         ];
 
         yield 'functions_in_the_global_namespace_should_not_be_removed_even_when_declaration_has_ne_lines_and_is_uppercase' => [
@@ -1074,8 +1007,7 @@ $b = $a-->ABC::Test;
 
                 is_int(1);
 
-                EOF
-            ,
+                EOF,
             <<<'EOF'
                 <?php
 
@@ -1089,8 +1021,7 @@ $b = $a-->ABC::Test;
 
                 is_int(1);
 
-                EOF
-            ,
+                EOF,
         ];
 
         yield 'use_trait should never be removed' => [
@@ -1126,8 +1057,7 @@ $b = $a-->ABC::Test;
                 {
                 }
 
-                EOF
-            ,
+                EOF,
             <<<'EOF'
                 <?php
 
@@ -1388,7 +1318,16 @@ Bar3:
         ];
 
         yield [
-            $expected = <<<'EOF'
+            <<<'EOF'
+                <?php
+                use some\a\{ClassD};
+                use function some\c\{fn_a};
+                use const some\d\{ConstB};
+
+                new CLassD();
+                echo fn_a(ConstB);
+                EOF,
+            <<<'EOF'
                 <?php
                 use some\a\{ClassD};
                 use some\b\{ClassA, ClassB, ClassC as C};
@@ -1396,41 +1335,131 @@ Bar3:
                 use const some\d\{ConstA, ConstB, ConstC};
 
                 new CLassD();
-                echo fn_a();
+                echo fn_a(ConstB);
                 EOF
         ];
 
-        yield [ // TODO test shows lot of cases where imports are not removed while could be
-            '<?php use A\{B,};
-use some\y\{ClassA, ClassB, ClassC as C,};
-use function some\a\{fn_a, fn_b, fn_c,};
-use const some\Z\{ConstAA,ConstBB,ConstCC,};
-use const some\X\{ConstA,ConstB,ConstC,ConstF};
-use C\{D,E,};
+        yield 'grouped imports' => [
+            <<<'EOF'
+                <?php
+                use some\y\{ClassA, ClassC as C,};
+                use function some\a\{
+                    fn_b,
+                };
+                use const some\Z\{ConstA,ConstC,};
 
-    echo ConstA.ConstB.ConstC,ConstF;
-    echo ConstBB.ConstCC;
-    fn_a(ClassA::test, new C());
-',
-            '<?php use A\{B,};
-use some\y\{ClassA, ClassB, ClassC as C,};
-use function some\a\{fn_a, fn_b, fn_c,};
-use const some\Z\{ConstAA,ConstBB,ConstCC,};
-use const some\X\{ConstA,ConstB,ConstC,ConstF};
-use C\{D,E,};
-use Z;
+                echo ConstA.ConstC;
+                fn_b(ClassA::test, new C());
+                EOF,
+            <<<'EOF'
+                <?php
+                use A\{B,};
+                use some\y\{ClassA, ClassB, ClassC as C,};
+                use function some\a\{
+                    fn_a,
+                    fn_b,
+                    fn_c,
+                };
+                use function some\b\{fn_x, fn_y, fn_z,};
+                use const some\Z\{ConstA,ConstB,ConstC,};
+                use const some\X\{ConstX,ConstY,ConstZ};
+                use C\{D,E,};
+                use Z;
 
-    echo ConstA.ConstB.ConstC,ConstF;
-    echo ConstBB.ConstCC;
-    fn_a(ClassA::test, new C());
-',
+                echo ConstA.ConstC;
+                fn_b(ClassA::test, new C());
+                EOF,
+        ];
+
+        yield 'multiline grouped imports with comments' => [
+            <<<'EOF'
+                <?php
+                use function some\a\{
+                     // Foo
+                    fn_b,
+                    /* Bar *//** Baz */
+                     # Buzz
+                };
+
+                fn_b();
+                EOF,
+            <<<'EOF'
+                <?php
+                use function some\a\{
+                    fn_a, // Foo
+                    fn_b,
+                    /* Bar */ fn_c, /** Baz */
+                    fn_d, # Buzz
+                };
+
+                fn_b();
+                EOF,
+        ];
+
+        yield 'comma-separated imports' => [
+            <<<'EOF'
+                <?php
+                use A;
+                use function fn_b;
+                use const ConstC;
+
+                fn_b(new A(), ConstC);
+                EOF,
+            <<<'EOF'
+                <?php
+                use A, B, C;
+                use function fn_a, fn_b, fn_c;
+                use const ConstA, ConstB, ConstC;
+
+                fn_b(new A(), ConstC);
+                EOF,
+        ];
+
+        yield 'only unused comma-separated imports in single line' => [
+            '<?php ',
+            '<?php use A, B, C;',
+        ];
+
+        yield 'only unused grouped imports in single line' => [
+            '<?php ',
+            '<?php use A\{B, C};',
+        ];
+
+        yield 'unused comma-separated imports right after open tag, with consecutive lines' => [
+            "<?php \n# Comment",
+            "<?php use A, B, C;\n\n# Comment",
+        ];
+
+        yield 'unused grouped imports right after open tag, with consecutive lines' => [
+            "<?php \n# Comment",
+            "<?php use A\\{B, C};\n\n# Comment",
+        ];
+
+        yield 'unused comma-separated imports right after open tag with a non-empty token after it, and with consecutive lines' => [
+            "<?php # Comment\n\n# Another comment",
+            "<?php use A, B, C; # Comment\n\n# Another comment",
+        ];
+
+        yield 'unused grouped imports right after open tag with a non-empty token after it, and with consecutive lines' => [
+            "<?php # Comment\n\n# Another comment",
+            "<?php use A\\{B, C}; # Comment\n\n# Another comment",
+        ];
+
+        yield 'only unused comma-separated imports in the last line, with whitespace after' => [
+            "<?php \n",
+            "<?php \nuse A, B, C;     \t\t",
+        ];
+
+        yield 'only unused grouped imports in the last line, with whitespace after' => [
+            "<?php \n",
+            "<?php \nuse A\\{B, C};     \t\t",
         ];
     }
 
     /**
      * @requires PHP <8.0
      */
-    public function testFixPrePHP80(): void
+    public function testFixPre80(): void
     {
         $this->doTest(
             '<?php
@@ -1605,20 +1634,7 @@ function test2($param = (new Foo6)) {}
 const D = new Foo7(1,2);
 ',
         ];
-    }
 
-    /**
-     * @requires PHP 8.1
-     *
-     * @dataProvider provideFixPhp81Cases
-     */
-    public function testFixPhp81(string $expected): void
-    {
-        $this->doTest($expected);
-    }
-
-    public static function provideFixPhp81Cases(): iterable
-    {
         yield [
             '<?php
                 enum Foo: string

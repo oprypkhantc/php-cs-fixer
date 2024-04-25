@@ -7,6 +7,15 @@ Renames PHPDoc tags.
 Configuration
 -------------
 
+``case_sensitive``
+~~~~~~~~~~~~~~~~~~
+
+Whether tags should be replaced only if they have exact same casing.
+
+Allowed types: ``bool``
+
+Default value: ``false``
+
 ``fix_annotation``
 ~~~~~~~~~~~~~~~~~~
 
@@ -33,15 +42,6 @@ A map of tags to replace.
 Allowed types: ``array``
 
 Default value: ``[]``
-
-``case_sensitive``
-~~~~~~~~~~~~~~~~~~
-
-Whether tags should be replaced only if they have exact same casing.
-
-Allowed types: ``bool``
-
-Default value: ``false``
 
 Examples
 --------
@@ -125,3 +125,10 @@ The rule is part of the following rule sets:
   ``['replacements' => ['inheritDocs' => 'inheritDoc']]``
 
 
+References
+----------
+
+- Fixer class: `PhpCsFixer\\Fixer\\Phpdoc\\GeneralPhpdocTagRenameFixer <./../../../src/Fixer/Phpdoc/GeneralPhpdocTagRenameFixer.php>`_
+- Test class: `PhpCsFixer\\Tests\\Fixer\\Phpdoc\\GeneralPhpdocTagRenameFixerTest <./../../../tests/Fixer/Phpdoc/GeneralPhpdocTagRenameFixerTest.php>`_
+
+The test class defines officially supported behaviour. Each test case is a part of our backward compatibility promise.

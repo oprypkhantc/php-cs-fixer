@@ -25,14 +25,17 @@ final class OrderedTraitsFixerTest extends AbstractFixerTestCase
 {
     /**
      * @dataProvider provideFixCases
+     *
+     * @param array<string, mixed> $configuration
      */
-    public function testFix(string $expected, ?string $input = null): void
+    public function testFix(string $expected, ?string $input = null, array $configuration = []): void
     {
+        $this->fixer->configure($configuration);
         $this->doTest($expected, $input);
     }
 
     /**
-     * @return iterable<array>
+     * @return iterable<string, array{string, 1?: ?string}>
      */
     public static function provideFixCases(): iterable
     {
@@ -302,38 +305,36 @@ class Foo {
     use A;
 }',
         ];
-    }
 
-    /**
-     * @param array<mixed> $configuration
-     *
-     * @dataProvider provideFixWithConfigurationCases
-     */
-    public function testFixWithConfiguration(array $configuration, string $expected, ?string $input = null): void
-    {
-        $this->fixer->configure($configuration);
-        $this->doTest($expected, $input);
-    }
+        yield 'simple and with namespace' => [
+            '<?php
 
-    /**
-     * @return iterable<mixed>
-     */
-    public static function provideFixWithConfigurationCases(): iterable
-    {
+class User
+{
+    use Test\B, TestA;
+}',
+            '<?php
+
+class User
+{
+    use TestA, Test\B;
+}',
+        ];
+
         yield 'with case sensitive order' => [
+            '<?php
+class Foo {
+    use AA;
+    use Aaa;
+}',
+            '<?php
+class Foo {
+    use Aaa;
+    use AA;
+}',
             [
                 'case_sensitive' => true,
             ],
-            '<?php
-class Foo {
-    use AA;
-    use Aaa;
-}',
-            '<?php
-class Foo {
-    use Aaa;
-    use AA;
-}',
         ];
     }
 }

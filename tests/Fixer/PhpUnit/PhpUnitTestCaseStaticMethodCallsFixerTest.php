@@ -33,9 +33,7 @@ final class PhpUnitTestCaseStaticMethodCallsFixerTest extends AbstractFixerTestC
         $assertionRefClass = new \ReflectionClass(TestCase::class);
         $updatedStaticMethodsList = $assertionRefClass->getMethods(\ReflectionMethod::IS_PUBLIC);
 
-        $fixerRefClass = new \ReflectionClass(PhpUnitTestCaseStaticMethodCallsFixer::class);
-        $defaultProperties = $fixerRefClass->getDefaultProperties();
-        $staticMethods = $defaultProperties['staticMethods'];
+        $staticMethods = (new \ReflectionClass(PhpUnitTestCaseStaticMethodCallsFixer::class))->getConstant('STATIC_METHODS');
 
         $missingMethods = [];
         foreach ($updatedStaticMethodsList as $method) {
@@ -88,8 +86,7 @@ final class PhpUnitTestCaseStaticMethodCallsFixerTest extends AbstractFixerTestC
                         static::fail('foo');
                     }
                 }
-                EOF
-            ,
+                EOF,
             <<<'EOF'
                 <?php
                 class MyTest extends \PHPUnit_Framework_TestCase
@@ -101,8 +98,7 @@ final class PhpUnitTestCaseStaticMethodCallsFixerTest extends AbstractFixerTestC
                         $this->fail('foo');
                     }
                 }
-                EOF
-            ,
+                EOF,
         ];
 
         yield [
@@ -127,8 +123,7 @@ final class PhpUnitTestCaseStaticMethodCallsFixerTest extends AbstractFixerTestC
                         ;
                     }
                 }
-                EOF
-            ,
+                EOF,
             <<<'EOF'
                 <?php
                 class MyTest extends \PHPUnit_Framework_TestCase
@@ -150,8 +145,7 @@ final class PhpUnitTestCaseStaticMethodCallsFixerTest extends AbstractFixerTestC
                         ;
                     }
                 }
-                EOF
-            ,
+                EOF,
         ];
 
         yield [
@@ -172,8 +166,7 @@ final class PhpUnitTestCaseStaticMethodCallsFixerTest extends AbstractFixerTestC
                         */
                     }
                 }
-                EOF
-            ,
+                EOF,
             <<<'EOF'
                 <?php
                 class MyTest extends \PHPUnit_Framework_TestCase
@@ -191,8 +184,7 @@ final class PhpUnitTestCaseStaticMethodCallsFixerTest extends AbstractFixerTestC
                         */
                     }
                 }
-                EOF
-            ,
+                EOF,
         ];
 
         yield [
@@ -213,8 +205,7 @@ final class PhpUnitTestCaseStaticMethodCallsFixerTest extends AbstractFixerTestC
                         };
                     }
                 }
-                EOF
-            ,
+                EOF,
             <<<'EOF'
                 <?php
                 class MyTest extends \PHPUnit_Framework_TestCase
@@ -232,8 +223,7 @@ final class PhpUnitTestCaseStaticMethodCallsFixerTest extends AbstractFixerTestC
                         };
                     }
                 }
-                EOF
-            ,
+                EOF,
             ['call_type' => PhpUnitTestCaseStaticMethodCallsFixer::CALL_TYPE_THIS],
         ];
 
@@ -249,8 +239,7 @@ final class PhpUnitTestCaseStaticMethodCallsFixerTest extends AbstractFixerTestC
                         self::fail('foo');
                     }
                 }
-                EOF
-            ,
+                EOF,
             <<<'EOF'
                 <?php
                 class MyTest extends \PHPUnit_Framework_TestCase
@@ -262,8 +251,7 @@ final class PhpUnitTestCaseStaticMethodCallsFixerTest extends AbstractFixerTestC
                         static::fail('foo');
                     }
                 }
-                EOF
-            ,
+                EOF,
             ['call_type' => PhpUnitTestCaseStaticMethodCallsFixer::CALL_TYPE_SELF],
         ];
 
@@ -284,8 +272,7 @@ final class PhpUnitTestCaseStaticMethodCallsFixerTest extends AbstractFixerTestC
                         OtherTest::setUpBeforeClass();
                     }
                 }
-                EOF
-            ,
+                EOF,
             <<<'EOF'
                 <?php
                 class MyTest extends \PHPUnit_Framework_TestCase
@@ -302,8 +289,7 @@ final class PhpUnitTestCaseStaticMethodCallsFixerTest extends AbstractFixerTestC
                         OtherTest::setUpBeforeClass();
                     }
                 }
-                EOF
-            ,
+                EOF,
             [
                 'call_type' => PhpUnitTestCaseStaticMethodCallsFixer::CALL_TYPE_THIS,
                 'methods' => ['setUpBeforeClass' => PhpUnitTestCaseStaticMethodCallsFixer::CALL_TYPE_STATIC],
@@ -359,8 +345,7 @@ final class PhpUnitTestCaseStaticMethodCallsFixerTest extends AbstractFixerTestC
                         static::assertSame(1, 2);
                     }
                 }
-                EOF
-            ,
+                EOF,
             null,
             [
                 'call_type' => PhpUnitTestCaseStaticMethodCallsFixer::CALL_TYPE_THIS,
@@ -403,8 +388,7 @@ final class PhpUnitTestCaseStaticMethodCallsFixerTest extends AbstractFixerTestC
                     }
 
                 }
-                EOF
-            ,
+                EOF,
             <<<'EOF'
                 <?php
                 class MyTest extends \PHPUnit_Framework_TestCase
@@ -440,8 +424,7 @@ final class PhpUnitTestCaseStaticMethodCallsFixerTest extends AbstractFixerTestC
                     }
 
                 }
-                EOF
-            ,
+                EOF,
             [
                 'call_type' => PhpUnitTestCaseStaticMethodCallsFixer::CALL_TYPE_THIS,
             ],
@@ -459,8 +442,7 @@ final class PhpUnitTestCaseStaticMethodCallsFixerTest extends AbstractFixerTestC
 
                     public function assertSame($foo, $bar){}
                 }
-                EOF
-            ,
+                EOF,
         ];
 
         yield 'do not change when only case is different' => [
@@ -473,8 +455,7 @@ final class PhpUnitTestCaseStaticMethodCallsFixerTest extends AbstractFixerTestC
                         STATIC::assertSame(1, 1);
                     }
                 }
-                EOF
-            ,
+                EOF,
         ];
 
         yield 'do not crash on abstract static function' => [
@@ -484,8 +465,7 @@ final class PhpUnitTestCaseStaticMethodCallsFixerTest extends AbstractFixerTestC
                 {
                     abstract public static function dataProvider();
                 }
-                EOF
-            ,
+                EOF,
             null,
             [
                 'call_type' => PhpUnitTestCaseStaticMethodCallsFixer::CALL_TYPE_THIS,

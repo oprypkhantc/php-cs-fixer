@@ -206,3 +206,10 @@ The rule is part of the following rule sets:
   ``['include' => ['@compiler_optimized'], 'scope' => 'namespaced', 'strict' => true]``
 
 
+References
+----------
+
+- Fixer class: `PhpCsFixer\\Fixer\\FunctionNotation\\NativeFunctionInvocationFixer <./../../../src/Fixer/FunctionNotation/NativeFunctionInvocationFixer.php>`_
+- Test class: `PhpCsFixer\\Tests\\Fixer\\FunctionNotation\\NativeFunctionInvocationFixerTest <./../../../tests/Fixer/FunctionNotation/NativeFunctionInvocationFixerTest.php>`_
+
+The test class defines officially supported behaviour. Each test case is a part of our backward compatibility promise.

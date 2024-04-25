@@ -40,10 +40,8 @@ final class BlankLineAfterOpeningTagFixerTest extends AbstractFixerTestCase
         yield [
             '<?php
 
-    $a = 0;
     echo 1;',
             '<?php
-    $a = 0;
     echo 1;',
         ];
 
@@ -138,19 +136,41 @@ Html here
 $foo = $bar;
 ?>',
         ];
+
+        yield 'empty file with open tag without new line' => [
+            '<?php',
+        ];
+
+        yield 'empty file with open tag with new line' => [
+            "<?php\n",
+        ];
+
+        yield 'file with shebang' => [
+            <<<'EOD'
+                #!x
+                <?php
+
+                echo 1;
+                EOD,
+            <<<'EOD'
+                #!x
+                <?php
+                echo 1;
+                EOD,
+        ];
     }
 
     /**
-     * @dataProvider provideMessyWhitespacesCases
+     * @dataProvider provideWithWhitespacesConfigCases
      */
-    public function testMessyWhitespaces(string $expected, ?string $input = null): void
+    public function testWithWhitespacesConfig(string $expected, ?string $input = null): void
     {
         $this->fixer->setWhitespacesConfig(new WhitespacesFixerConfig("\t", "\r\n"));
 
         $this->doTest($expected, $input);
     }
 
-    public static function provideMessyWhitespacesCases(): iterable
+    public static function provideWithWhitespacesConfigCases(): iterable
     {
         yield [
             "<?php\r\n\r\n\$foo = true;\r\n",

@@ -28,8 +28,6 @@ final class PhpdocToCommentFixerTest extends AbstractFixerTestCase
     /**
      * @param array<string, mixed> $config
      *
-     * @dataProvider provideDocblocksCases
-     * @dataProvider provideTraitsCases
      * @dataProvider provideFixCases
      */
     public function testFix(string $expected, ?string $input = null, array $config = []): void
@@ -39,7 +37,7 @@ final class PhpdocToCommentFixerTest extends AbstractFixerTestCase
         $this->doTest($expected, $input);
     }
 
-    public static function provideDocblocksCases(): iterable
+    public static function provideFixCases(): iterable
     {
         yield [
             '<?php
@@ -685,10 +683,37 @@ foreach($connections as $key => $sqlite) {
             fn ($x) => $x + 42;
             ',
         ];
-    }
 
-    public static function provideTraitsCases(): iterable
-    {
+        yield 'convert before return without option' => [
+            '<?php
+function doSomething()
+{
+    /* @var void */
+    return;
+}
+',
+            '<?php
+function doSomething()
+{
+    /** @var void */
+    return;
+}
+',
+            ['allow_before_return_statement' => false],
+        ];
+
+        yield 'do not convert before return with option' => [
+            '<?php
+function doSomething()
+{
+    /** @var void */
+    return;
+}
+',
+            null,
+            ['allow_before_return_statement' => true],
+        ];
+
         yield [
             '<?php
 $first = true;// needed because by default first docblock is never fixed.
@@ -701,10 +726,7 @@ trait DocBlocks
     public function test() {}
 }',
         ];
-    }
 
-    public static function provideFixCases(): iterable
-    {
         yield [
             '<?php
 /** header */

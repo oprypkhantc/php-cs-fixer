@@ -56,7 +56,7 @@ final class AnnotationTest extends TestCase
     /**
      * This represents the content of each annotation.
      *
-     * @var string[]
+     * @var list<string>
      */
     private static $content = [
         "     * @param string \$hello\n",
@@ -69,21 +69,21 @@ final class AnnotationTest extends TestCase
     /**
      * This represents the start indexes of each annotation.
      *
-     * @var int[]
+     * @var list<int>
      */
     private static $start = [3, 4, 7, 9, 14];
 
     /**
      * This represents the start indexes of each annotation.
      *
-     * @var int[]
+     * @var list<int>
      */
     private static $end = [3, 5, 7, 12, 14];
 
     /**
      * This represents the tag type of each annotation.
      *
-     * @var string[]
+     * @var list<string>
      */
     private static $tags = ['param', 'param', 'param', 'throws', 'return'];
 
@@ -234,7 +234,7 @@ final class AnnotationTest extends TestCase
     }
 
     /**
-     * @param string[] $expected
+     * @param list<string> $expected
      *
      * @dataProvider provideTypeParsingCases
      */
@@ -499,8 +499,8 @@ final class AnnotationTest extends TestCase
     }
 
     /**
-     * @param string[] $expected
-     * @param string[] $new
+     * @param list<string> $expected
+     * @param list<string> $new
      *
      * @dataProvider provideTypesCases
      */
@@ -536,7 +536,7 @@ final class AnnotationTest extends TestCase
     }
 
     /**
-     * @param string[] $expected
+     * @param list<string> $expected
      *
      * @dataProvider provideNormalizedTypesCases
      */
@@ -604,7 +604,7 @@ final class AnnotationTest extends TestCase
     }
 
     /**
-     * @param NamespaceUseAnalysis[] $namespaceUses
+     * @param list<NamespaceUseAnalysis> $namespaceUses
      *
      * @dataProvider provideGetTypeExpressionCases
      */
@@ -619,7 +619,7 @@ final class AnnotationTest extends TestCase
     public static function provideGetTypeExpressionCases(): iterable
     {
         $appNamespace = new NamespaceAnalysis('App', 'App', 0, 999, 0, 999);
-        $useTraversable = new NamespaceUseAnalysis('Traversable', 'Traversable', false, 0, 999, NamespaceUseAnalysis::TYPE_CLASS);
+        $useTraversable = new NamespaceUseAnalysis(NamespaceUseAnalysis::TYPE_CLASS, \Traversable::class, \Traversable::class, false, false, 0, 999);
 
         yield ['* @param array|Traversable $foo', null, [], 'iterable'];
 

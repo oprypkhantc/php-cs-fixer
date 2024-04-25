@@ -25,13 +25,19 @@ use PhpCsFixer\WhitespacesFixerConfig;
 final class StatementIndentationFixerTest extends AbstractFixerTestCase
 {
     /**
+     * @param array<string, mixed> $configuration
+     *
      * @dataProvider provideFixCases
      */
-    public function testFix(string $expected, ?string $input = null): void
+    public function testFix(string $expected, ?string $input = null, array $configuration = []): void
     {
+        $this->fixer->configure($configuration);
         $this->doTest($expected, $input);
     }
 
+    /**
+     * @return iterable<array{0: string, 1?: ?string, 2?: array<string, mixed>}>
+     */
     public static function provideFixCases(): iterable
     {
         yield 'no brace block' => [
@@ -776,15 +782,6 @@ $foo
 ;',
         ];
 
-        yield 'if with only a comment and followed by else' => [
-            '<?php
-if (true) {
-    // foo
-} else {
-    // bar
-}',
-        ];
-
         yield 'multiple anonymous functions as function arguments' => [
             '<?php
 foo(function () {
@@ -924,7 +921,144 @@ $result3 = (new Argument())(
 );',
         ];
 
+        yield 'if with only a comment and followed by else' => [
+            '<?php
+if (true) {
+    // foo
+} else {
+    // bar
+}',
+            '<?php
+if (true) {
+// foo
+} else {
+        // bar
+}',
+        ];
+
+        yield 'comment before else blocks WITHOUT stick_comment_to_next_continuous_control_statement' => [
+            '<?php
+// foo
+if ($foo) {
+    echo "foo";
+    // bar
+} else {
+    $aaa = 1;
+}',
+            '<?php
+        // foo
+if ($foo) {
+    echo "foo";
+        // bar
+} else {
+    $aaa = 1;
+}',
+            ['stick_comment_to_next_continuous_control_statement' => false],
+        ];
+
+        yield 'comment before else blocks WITH stick_comment_to_next_continuous_control_statement' => [
+            '<?php
+// foo
+if ($foo) {
+    echo "foo";
+// bar
+} else {
+    $aaa = 1;
+}',
+            '<?php
+        // foo
+if ($foo) {
+    echo "foo";
+        // bar
+} else {
+    $aaa = 1;
+}',
+            ['stick_comment_to_next_continuous_control_statement' => true],
+        ];
+
+        yield 'multiline comment in block - describing next block' => [
+            '<?php
+if (1) {
+    $b = "a";
+// multiline comment line 1
+// multiline comment line 2
+// multiline comment line 3
+} else {
+    $c = "b";
+}',
+            '<?php
+if (1) {
+    $b = "a";
+    // multiline comment line 1
+    // multiline comment line 2
+    // multiline comment line 3
+} else {
+    $c = "b";
+}',
+            ['stick_comment_to_next_continuous_control_statement' => true],
+        ];
+
+        yield 'multiline comment in block - the only content in block' => [
+            '<?php
+if (1) {
+    // multiline comment line 1
+    // multiline comment line 2
+    // multiline comment line 3
+} else {
+    $c = "b";
+}',
+            '<?php
+if (1) {
+ // multiline comment line 1
+  // multiline comment line 2
+// multiline comment line 3
+} else {
+    $c = "b";
+}',
+        ];
+
+        yield 'comment before elseif blocks' => [
+            '<?php
+// foo
+if ($foo) {
+    echo "foo";
+// bar
+} elseif(1) {
+    echo "bar";
+} elseif(2) {
+    // do nothing
+} elseif(3) {
+    $aaa = 1;
+    // end comment in final block
+}',
+            '<?php
+    // foo
+if ($foo) {
+    echo "foo";
+    // bar
+} elseif(1) {
+    echo "bar";
+} elseif(2) {
+// do nothing
+} elseif(3) {
+    $aaa = 1;
+    // end comment in final block
+}',
+            ['stick_comment_to_next_continuous_control_statement' => true],
+        ];
+
         yield 'comments at the end of if/elseif/else blocks' => [
+            '<?php
+if ($foo) {
+    echo "foo";
+// foo
+} elseif ($bar) {
+    echo "bar";
+// bar
+} else {
+    echo "baz";
+    // baz
+}',
             '<?php
 if ($foo) {
     echo "foo";
@@ -936,18 +1070,427 @@ if ($foo) {
     echo "baz";
     // baz
 }',
+            ['stick_comment_to_next_continuous_control_statement' => true],
+        ];
+
+        yield 'if-elseif-else without braces' => [
+            '<?php
+if ($foo)
+    foo();
+elseif ($bar)
+    bar();
+else
+    baz();',
+            '<?php
+if ($foo)
+foo();
+elseif ($bar)
+  bar();
+else
+        baz();',
+        ];
+
+        yield 'for without braces' => [
+            '<?php
+for (;;)
+    foo();',
+            '<?php
+for (;;)
+  foo();',
+        ];
+
+        yield 'foreach without braces' => [
+            '<?php
+foreach ($foo as $bar)
+    foo();',
+            '<?php
+foreach ($foo as $bar)
+  foo();',
+        ];
+
+        yield 'while without braces' => [
+            '<?php
+while (true)
+    foo();',
+            '<?php
+while (true)
+  foo();',
+        ];
+
+        yield 'do-while without braces' => [
+            '<?php
+do
+    foo();
+while (true);',
+            '<?php
+do
+  foo();
+ while (true);',
+        ];
+
+        yield 'nested control structures without braces' => [
+            '<?php
+if (true)
+    if (true)
+        if (true)
+            for ($i = 0; $i < 1; ++$i)
+                echo 1;
+        elseif (true)
+            foreach ([] as $foo)
+                echo 2;
+        else if (true)
+            while (true)
+                echo 3;
+        else
+            do
+                echo 4;
+            while (true);
+    else
+        echo 5;',
+            '<?php
+if (true)
+if (true)
+ if (true)
+    for ($i = 0; $i < 1; ++$i)
+  echo 1;
+elseif (true)
+  foreach ([] as $foo)
+   echo 2;
+else if (true)
+  while (true)
+   echo 3;
+  else
+  do
+      echo 4;
+      while (true);
+    else
+     echo 5;',
+        ];
+
+        yield 'mixex if-else with and without braces' => [
+            '<?php
+if (true)
+    if (true) {
+        if (true)
+            echo 1;
+        else
+            echo 2;
+    }
+    else {
+        echo 3;
+    }
+else
+    echo 4;',
+            '<?php
+if (true)
+  if (true) {
+          if (true)
+               echo 1;
+  else
+        echo 2;
+   }
+ else {
+    echo 3;
+ }
+    else
+     echo 4;',
+        ];
+
+        yield 'empty if and else without braces' => [
+            '<?php
+if (true) {
+    if (false);
+    elseif (false);
+    else if (false);
+    else
+        echo 1;
+}',
+            '<?php
+  if (true) {
+   if (false);
+  elseif (false);
+ else if (false);
+else
+echo 1;
+}',
+        ];
+
+        yield 'multiline class constant' => [
+            '<?php
+class Foo
+{
+    const
+        FOO = 1;
+}',
+            '<?php
+class Foo
+{
+  const
+     FOO = 1;
+}',
+        ];
+
+        yield 'multiline class constant with visibility' => [
+            '<?php
+class Foo
+{
+    public const
+        FOO = 1;
+    protected const
+        BAR = 1;
+    private const
+        BAZ = 1;
+}',
+            '<?php
+class Foo
+{
+  public const
+     FOO = 1;
+  protected const
+         BAR = 1;
+  private const
+                BAZ = 1;
+}',
+        ];
+
+        yield 'multiline comma-separated class constants' => [
+            '<?php
+class Foo
+{
+    const
+        FOO = 1,
+        BAR = 2;
+}',
+            '<?php
+class Foo
+{
+  const
+     FOO = 1,
+      BAR = 2;
+}',
+        ];
+
+        yield 'multiline class constant with array value' => [
+            '<?php
+class Foo
+{
+    const
+        FOO = [
+                  1
+                             ];
+}',
+            '<?php
+class Foo
+{
+  const
+     FOO = [
+               1
+                          ];
+}',
+        ];
+
+        yield 'multiline class constant with semicolon on next line' => [
+            '<?php
+class Foo
+{
+    public const
+        FOO = 1
+    ;
+}',
+            '<?php
+class Foo
+{
+  public const
+     FOO = 1
+      ;
+}',
+        ];
+
+        yield 'multiline class property' => [
+            '<?php
+class Foo
+{
+    public
+        $foo;
+    protected
+        $bar;
+    private
+        $baz;
+}',
+            '<?php
+class Foo
+{
+  public
+     $foo;
+  protected
+         $bar;
+  private
+                $baz;
+}',
+        ];
+
+        yield 'multiline class property with default value' => [
+            '<?php
+class Foo
+{
+    public
+        $foo = 1;
+}',
+            '<?php
+class Foo
+{
+  public
+     $foo = 1;
+}',
+        ];
+
+        yield 'multiline class typed property' => [
+            '<?php
+class Foo
+{
+    public
+        int $foo;
+}',
+            '<?php
+class Foo
+{
+  public
+     int $foo;
+}',
+        ];
+
+        yield 'multiline class static property' => [
+            '<?php
+class Foo
+{
+    public static
+        $foo;
+    static public
+        $bar;
+}',
+            '<?php
+class Foo
+{
+  public static
+     $foo;
+  static public
+       $bar;
+}',
+        ];
+
+        yield 'multiline comma-separated class properties' => [
+            '<?php
+class Foo
+{
+    public
+        $foo,
+        $bar;
+}',
+            '<?php
+class Foo
+{
+  public
+     $foo,
+      $bar;
+}',
+        ];
+
+        yield 'multiline class property with array value' => [
+            '<?php
+class Foo
+{
+    public
+        $foo = [
+                  1
+                             ];
+}',
+            '<?php
+class Foo
+{
+  public
+     $foo = [
+               1
+                          ];
+}',
+        ];
+
+        yield 'multiline class property with semicolon on next line' => [
+            '<?php
+class Foo
+{
+    public
+        $foo
+    ;
+}',
+            '<?php
+class Foo
+{
+  public
+     $foo
+      ;
+}',
+        ];
+
+        yield 'multiline class property with var' => [
+            '<?php
+class Foo
+{
+    var
+        $foo;
+}',
+            '<?php
+class Foo
+{
+  var
+     $foo;
+}',
+        ];
+
+        yield 'property with multiline array containing explicit keys' => [
+            '<?php
+class Foo
+{
+    private $foo = [
+        \'a\' => 1,
+        \'b\' => 2,
+    ];
+}',
+        ];
+
+        yield 'array with static method call' => [
+            '<?php
+$foo = [
+    static::createNoErrorReport(),
+    1,
+];',
+        ];
+
+        yield 'ternary operator in property' => [
+            <<<'PHP'
+                <?php
+                class Foo
+                {
+                    public int $bar = BAZ ? -1 : 1;
+                }
+                PHP
         ];
     }
 
     /**
+     * @param array<string, mixed> $configuration
+     *
      * @dataProvider provideFixWithTabsCases
      */
-    public function testFixWithTabs(string $expected, ?string $input = null): void
+    public function testFixWithTabs(string $expected, ?string $input = null, array $configuration = []): void
     {
+        $this->fixer->configure($configuration);
         $this->fixer->setWhitespacesConfig(new WhitespacesFixerConfig("\t"));
         $this->doTest($expected, $input);
     }
 
+    /**
+     * @return iterable<array{0: string, 1?: ?string, 2?: array<string, mixed>}>
+     */
     public static function provideFixWithTabsCases(): iterable
     {
         yield 'simple' => [
@@ -965,15 +1508,21 @@ if ($foo) {
     }
 
     /**
+     * @param array<string, mixed> $configuration
+     *
      * @dataProvider provideFixPhp80Cases
      *
      * @requires PHP 8.0
      */
-    public function testFixPhp80(string $expected, ?string $input = null): void
+    public function testFixPhp80(string $expected, ?string $input = null, array $configuration = []): void
     {
+        $this->fixer->configure($configuration);
         $this->doTest($expected, $input);
     }
 
+    /**
+     * @return iterable<array{0: string, 1?: ?string, 2?: array<string, mixed>}>
+     */
     public static function provideFixPhp80Cases(): iterable
     {
         yield 'match expression' => [
@@ -1032,15 +1581,21 @@ class Foo {
     }
 
     /**
+     * @param array<string, mixed> $configuration
+     *
      * @dataProvider provideFixPhp81Cases
      *
      * @requires PHP 8.1
      */
-    public function testFixPhp81(string $expected, ?string $input = null): void
+    public function testFixPhp81(string $expected, ?string $input = null, array $configuration = []): void
     {
+        $this->fixer->configure($configuration);
         $this->doTest($expected, $input);
     }
 
+    /**
+     * @return iterable<array{0: string, 1?: ?string, 2?: array<string, mixed>}>
+     */
     public static function provideFixPhp81Cases(): iterable
     {
         yield 'simple enum' => [
@@ -1093,6 +1648,25 @@ enum Color {
       public function foo() {
             return true;
         }
+}',
+        ];
+
+        yield 'multiline class readonly property' => [
+            '<?php
+class Foo
+{
+    public readonly
+        int $foo;
+    readonly public
+        int $bar;
+}',
+            '<?php
+class Foo
+{
+  public readonly
+     int $foo;
+  readonly public
+       int $bar;
 }',
         ];
     }

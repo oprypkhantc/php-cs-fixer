@@ -522,6 +522,51 @@ final class PhpdocTypesOrderFixerTest extends AbstractFixerTestCase
             '<?php /** @return A&B<X|Y|Z>&C&D */',
             '<?php /** @return A&D&B<X|Y|Z>&C */',
         ];
+
+        yield [
+            '<?php /** @param A|(B&C) */',
+            '<?php /** @param (C&B)|A */',
+        ];
+
+        yield [
+            '<?php /** @param A|((A&B)|(B&C)) */',
+            '<?php /** @param ((B&C)|(B&A))|A */',
+        ];
+
+        yield [
+            '<?php /** @param A&(B&C) */',
+            '<?php /** @param (C&B)&A */',
+        ];
+
+        yield [
+            '<?php /** @param (A&C)|(B&C)|(C&D) */',
+            '<?php /** @param (C&A)|(C&B)|(C&D) */',
+        ];
+
+        yield [
+            '<?php /** @param \A|(\B&\C)|D */',
+            '<?php /** @param D|\A|(\C&\B) */',
+        ];
+
+        yield [
+            '<?php /** @param A|((B&C)|D) */',
+            '<?php /** @param (D|(C&B))|A */',
+        ];
+
+        yield [
+            '<?php /** @var Closure<T>(T): T|null|string */',
+            '<?php /** @var string|Closure<T>(T): T|null */',
+        ];
+
+        yield [
+            '<?php /** @var \Closure<T of Model, T2, T3>(A|T, T3, T2): (T|T2)|null|string */',
+            '<?php /** @var string|\Closure<T of Model, T2, T3>(T|A, T3, T2): (T2|T)|null */',
+        ];
+
+        yield [
+            '<?php /** @var Closure<Closure_can_be_regular_class>|null|string */',
+            '<?php /** @var string|Closure<Closure_can_be_regular_class>|null */',
+        ];
     }
 
     /**

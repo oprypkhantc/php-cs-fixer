@@ -32,14 +32,14 @@ final class NameQualifiedTransformerTest extends AbstractTransformerTestCase
     use AssertTokensTrait;
 
     /**
-     * @param Token[]      $expected
-     * @param null|Token[] $input
+     * @param list<Token>      $expected
+     * @param null|list<Token> $input
      *
      * @dataProvider provideProcessCases
      *
      * @requires PHP 8.0
      */
-    public function testProcess(array $expected, array $input = null): void
+    public function testProcess(array $expected, ?array $input = null): void
     {
         $expectedTokens = Tokens::fromArray($expected);
         $tokens = null === $input
@@ -108,54 +108,56 @@ final class NameQualifiedTransformerTest extends AbstractTransformerTestCase
             ];
         }
 
-        yield 'name fully qualified 1' => [
-            [
-                new Token([T_OPEN_TAG, "<?php\n"]),
-                new Token([T_NS_SEPARATOR, '\\']),
-                new Token([T_STRING, 'Foo']),
-                new Token(';'),
-            ],
-            [
-                new Token([T_OPEN_TAG, "<?php\n"]),
-                new Token([T_NAME_FULLY_QUALIFIED, '\Foo']),
-                new Token(';'),
-            ],
-        ];
+        if (\defined('T_NAME_FULLY_QUALIFIED')) { // @TODO: drop condition when PHP 8.0+ is required
+            yield 'name fully qualified 1' => [
+                [
+                    new Token([T_OPEN_TAG, "<?php\n"]),
+                    new Token([T_NS_SEPARATOR, '\\']),
+                    new Token([T_STRING, 'Foo']),
+                    new Token(';'),
+                ],
+                [
+                    new Token([T_OPEN_TAG, "<?php\n"]),
+                    new Token([T_NAME_FULLY_QUALIFIED, '\Foo']),
+                    new Token(';'),
+                ],
+            ];
 
-        yield 'name qualified 1' => [
-            [
-                new Token([T_OPEN_TAG, "<?php\n"]),
-                new Token([T_STRING, 'Foo']),
-                new Token([T_NS_SEPARATOR, '\\']),
-                new Token([T_STRING, 'Bar']),
-                new Token(';'),
-            ],
-            [
-                new Token([T_OPEN_TAG, "<?php\n"]),
-                new Token([T_NAME_QUALIFIED, 'Foo\Bar']),
-                new Token(';'),
-            ],
-        ];
+            yield 'name qualified 1' => [
+                [
+                    new Token([T_OPEN_TAG, "<?php\n"]),
+                    new Token([T_STRING, 'Foo']),
+                    new Token([T_NS_SEPARATOR, '\\']),
+                    new Token([T_STRING, 'Bar']),
+                    new Token(';'),
+                ],
+                [
+                    new Token([T_OPEN_TAG, "<?php\n"]),
+                    new Token([T_NAME_QUALIFIED, 'Foo\Bar']),
+                    new Token(';'),
+                ],
+            ];
 
-        yield 'name qualified 2' => [
-            [
-                new Token([T_OPEN_TAG, "<?php\n"]),
-                new Token([T_NS_SEPARATOR, '\\']),
-                new Token([T_STRING, 'Foo']),
-                new Token([T_NS_SEPARATOR, '\\']),
-                new Token([T_STRING, 'Bar']),
-                new Token(';'),
-            ],
-            [
-                new Token([T_OPEN_TAG, "<?php\n"]),
-                new Token([T_NAME_QUALIFIED, '\Foo\Bar']),
-                new Token(';'),
-            ],
-        ];
+            yield 'name qualified 2' => [
+                [
+                    new Token([T_OPEN_TAG, "<?php\n"]),
+                    new Token([T_NS_SEPARATOR, '\\']),
+                    new Token([T_STRING, 'Foo']),
+                    new Token([T_NS_SEPARATOR, '\\']),
+                    new Token([T_STRING, 'Bar']),
+                    new Token(';'),
+                ],
+                [
+                    new Token([T_OPEN_TAG, "<?php\n"]),
+                    new Token([T_NAME_QUALIFIED, '\Foo\Bar']),
+                    new Token(';'),
+                ],
+            ];
+        }
     }
 
     /**
-     * @param Token[] $expected
+     * @param list<Token> $expected
      *
      * @dataProvider providePriorityCases
      */

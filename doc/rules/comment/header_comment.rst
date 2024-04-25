@@ -7,15 +7,6 @@ Add, replace or remove header comment.
 Configuration
 -------------
 
-``header``
-~~~~~~~~~~
-
-Proper header content.
-
-Allowed types: ``string``
-
-This option is required.
-
 ``comment_type``
 ~~~~~~~~~~~~~~~~
 
@@ -24,6 +15,15 @@ Comment syntax type.
 Allowed values: ``'comment'`` and ``'PHPDoc'``
 
 Default value: ``'comment'``
+
+``header``
+~~~~~~~~~~
+
+Proper header content.
+
+Allowed types: ``string``
+
+This option is required.
 
 ``location``
 ~~~~~~~~~~~~
@@ -125,3 +125,10 @@ With configuration: ``['header' => '']``.
     namespace A\B;
 
     echo 1;
+References
+----------
+
+- Fixer class: `PhpCsFixer\\Fixer\\Comment\\HeaderCommentFixer <./../../../src/Fixer/Comment/HeaderCommentFixer.php>`_
+- Test class: `PhpCsFixer\\Tests\\Fixer\\Comment\\HeaderCommentFixerTest <./../../../tests/Fixer/Comment/HeaderCommentFixerTest.php>`_
+
+The test class defines officially supported behaviour. Each test case is a part of our backward compatibility promise.

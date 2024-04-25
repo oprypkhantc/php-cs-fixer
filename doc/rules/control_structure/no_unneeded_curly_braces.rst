@@ -5,6 +5,14 @@ Rule ``no_unneeded_curly_braces``
 Removes unneeded curly braces that are superfluous and aren't part of a control
 structure's body.
 
+Warning
+-------
+
+This rule is deprecated and will be removed in the next major version
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+You should use ``no_unneeded_braces`` instead.
+
 Configuration
 -------------
 
@@ -58,18 +66,10 @@ With configuration: ``['namespaces' => true]``.
         function Bar(){}
    -}
    +
+References
+----------
 
-Rule sets
----------
+- Fixer class: `PhpCsFixer\\Fixer\\ControlStructure\\NoUnneededCurlyBracesFixer <./../../../src/Fixer/ControlStructure/NoUnneededCurlyBracesFixer.php>`_
+- Test class: `PhpCsFixer\\Tests\\Fixer\\ControlStructure\\NoUnneededCurlyBracesFixerTest <./../../../tests/Fixer/ControlStructure/NoUnneededCurlyBracesFixerTest.php>`_
 
-The rule is part of the following rule sets:
-
-- `@PhpCsFixer <./../../ruleSets/PhpCsFixer.rst>`_ with config:
-
-  ``['namespaces' => true]``
-
-- `@Symfony <./../../ruleSets/Symfony.rst>`_ with config:
-
-  ``['namespaces' => true]``
-
-
+The test class defines officially supported behaviour. Each test case is a part of our backward compatibility promise.

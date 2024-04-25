@@ -36,7 +36,7 @@ final class NoSuperfluousPhpdocTagsFixerTest extends AbstractFixerTestCase
 
     public static function provideFixCases(): iterable
     {
-        yield 'no typehint' => [
+        yield 'no type declaration' => [
             '<?php
 class Foo {
     /**
@@ -48,7 +48,7 @@ class Foo {
 }',
         ];
 
-        yield 'same typehint' => [
+        yield 'same type declaration' => [
             '<?php
 class Foo {
     /**
@@ -64,7 +64,7 @@ class Foo {
 }',
         ];
 
-        yield 'same optional typehint' => [
+        yield 'same optional type declaration' => [
             '<?php
 class Foo {
     /**
@@ -80,7 +80,7 @@ class Foo {
 }',
         ];
 
-        yield 'same typehint with description' => [
+        yield 'same type declaration with description' => [
             '<?php
 class Foo {
     /**
@@ -190,7 +190,7 @@ class Foo {
 }',
         ];
 
-        yield 'same typehint with different casing' => [
+        yield 'same type declaration with different casing' => [
             '<?php
 class Foo {
     /**
@@ -206,7 +206,7 @@ class Foo {
 }',
         ];
 
-        yield 'same typehint with leading backslash - global' => [
+        yield 'same type declaration with leading backslash - global' => [
             '<?php
 class Foo {
     /**
@@ -222,7 +222,7 @@ class Foo {
 }',
         ];
 
-        yield 'same typehint with leading backslash - namespaced' => [
+        yield 'same type declaration with leading backslash - namespaced' => [
             '<?php
 namespace Xxx;
 
@@ -242,7 +242,7 @@ class Foo {
 }',
         ];
 
-        yield 'same typehint without leading backslash - global' => [
+        yield 'same type declaration without leading backslash - global' => [
             '<?php
 class Foo {
     /**
@@ -258,7 +258,7 @@ class Foo {
 }',
         ];
 
-        yield 'same typehint without leading backslash - namespaced' => [
+        yield 'same type declaration without leading backslash - namespaced' => [
             '<?php
 namespace Xxx;
 
@@ -278,7 +278,7 @@ class Foo {
 }',
         ];
 
-        yield 'same typehint with null implied from native type - param type' => [
+        yield 'same type declaration with null implied from native type - param type' => [
             '<?php
 class Foo {
     /**
@@ -299,7 +299,7 @@ class Foo {
 }',
         ];
 
-        yield 'same typehint with null implied from native type - return type' => [
+        yield 'same type declaration with null implied from native type - return type' => [
             '<?php
 class Foo {
     /**
@@ -319,7 +319,7 @@ class Foo {
 }',
         ];
 
-        yield 'same typehint with null implied from native type - property' => [
+        yield 'same type declaration with null implied from native type - property' => [
             '<?php
 class Foo {
     /**  */
@@ -332,7 +332,7 @@ class Foo {
 }',
         ];
 
-        yield 'same typehint with null but native type without null - invalid phpdoc must be kept unfixed' => [
+        yield 'same type declaration with null but native type without null - invalid phpdoc must be kept unfixed' => [
             '<?php
 class Foo {
     /** @var bool|null */
@@ -469,7 +469,7 @@ class Foo {
 }',
         ];
 
-        yield 'with special type hints' => [
+        yield 'with special type declarations' => [
             '<?php
 class Foo {
     /**
@@ -1302,7 +1302,7 @@ class Foo {
 }',
         ];
 
-        yield 'same type hint' => [
+        yield 'same type declaration (with extra empty line)' => [
             '<?php
 class Foo {
     /**
@@ -1321,7 +1321,7 @@ class Foo {
 }',
         ];
 
-        yield 'same type hint with description' => [
+        yield 'same type declaration (with return type) with description' => [
             '<?php
 class Foo {
     /**
@@ -1416,7 +1416,7 @@ use Foo\Bar as Baz;
 function foo(Baz $bar): Baz {}',
         ];
 
-        yield 'with scalar type hints' => [
+        yield 'with scalar type declarations' => [
             '<?php
 class Foo {
     /**
@@ -1442,7 +1442,7 @@ class Foo {
                      * "Sponsored" by https://github.com/PrestaShop/PrestaShop/blob/1.6.1.24/tools/tcpdf/tcpdf.php (search for "Get page dimensions from format name")
                      * @see
                      * @param $number - it can be:
-                     * '.implode("\n                     * ", range(1, 1000)).'
+                     * '.implode("\n                     * ", range(1, 1_000)).'
                      */
                      function display($number) {}
                 ',
@@ -1477,7 +1477,7 @@ trait Foo {}',
             ['remove_inheritdoc' => true],
         ];
 
-        yield 'same nullable type hint' => [
+        yield 'same nullable type declaration' => [
             '<?php
 class Foo {
     /**
@@ -1496,7 +1496,7 @@ class Foo {
 }',
         ];
 
-        yield 'same nullable type hint reversed' => [
+        yield 'same nullable type declaration reversed' => [
             '<?php
 class Foo {
     /**
@@ -1515,7 +1515,7 @@ class Foo {
 }',
         ];
 
-        yield 'same nullable type hint with description' => [
+        yield 'same nullable type declaration with description' => [
             '<?php
 class Foo {
     /**
@@ -1527,7 +1527,7 @@ class Foo {
 }',
         ];
 
-        yield 'same optional nullable type hint' => [
+        yield 'same optional nullable type declaration' => [
             '<?php
 class Foo {
     /**
@@ -1626,7 +1626,7 @@ use Foo\Bar as Baz;
 function foo(?Baz $bar): ?Baz {}',
         ];
 
-        yield 'with nullable special type hints' => [
+        yield 'with nullable special type declarations' => [
             '<?php
 class Foo {
     /**
@@ -2040,7 +2040,7 @@ class Foo {
 }',
         ];
 
-        yield 'phpdoc does not match property typehint' => [
+        yield 'phpdoc does not match property type declaration' => [
             '<?php
 class Foo {
     /**
@@ -2435,22 +2435,195 @@ class Foo {
     public function foo() {}
 }',
         ];
+
+        yield 'superfluous asterisk in corrupted phpDoc' => [
+            '<?php
+class Foo {
+    /** * @return Baz */
+    public function doFoo($bar) {}
+}',
+        ];
+
+        yield 'superfluous return type after superfluous asterisk in corrupted phpDoc' => [
+            '<?php
+class Foo {
+    /**  */
+    public function doFoo($bar): Baz {}
+}',
+            '<?php
+class Foo {
+    /** * @return Baz */
+    public function doFoo($bar): Baz {}
+}',
+        ];
+
+        yield 'superfluous parameter type for anonymous function' => [
+            '<?php
+/**  */
+function (int $foo) { return 1; };',
+            '<?php
+/** @param int $foo */
+function (int $foo) { return 1; };',
+        ];
+
+        yield 'superfluous return type for anonymous function' => [
+            '<?php
+/**  */
+function ($foo): int { return 1; };',
+            '<?php
+/** @return int */
+function ($foo): int { return 1; };',
+        ];
+
+        yield 'superfluous parameter type for static anonymous function' => [
+            '<?php
+/**  */
+static function (int $foo) { return 1; };',
+            '<?php
+/** @param int $foo */
+static function (int $foo) { return 1; };',
+        ];
+
+        yield 'superfluous return type for static anonymous function' => [
+            '<?php
+/**  */
+static function ($foo): int { return 1; };',
+            '<?php
+/** @return int */
+static function ($foo): int { return 1; };',
+        ];
+
+        yield 'superfluous parameter type for arrow function' => [
+            '<?php
+/**  */
+fn (int $foo) => 1;',
+            '<?php
+/** @param int $foo */
+fn (int $foo) => 1;',
+        ];
+
+        yield 'superfluous return type for arrow function' => [
+            '<?php
+/**  */
+fn ($foo): int => 1;',
+            '<?php
+/** @return int */
+fn ($foo): int => 1;',
+        ];
+
+        yield 'superfluous parameter type for static arrow function' => [
+            '<?php
+/**  */
+static fn (int $foo) => 1;',
+            '<?php
+/** @param int $foo */
+static fn (int $foo) => 1;',
+        ];
+
+        yield 'superfluous return type for static arrow function' => [
+            '<?php
+/**  */
+static fn ($foo): int => 1;',
+            '<?php
+/** @return int */
+static fn ($foo): int => 1;',
+        ];
+
+        yield 'multiline @param must be kept even if there is no description on the phpdoc tag line' => [
+            <<<'EOD'
+                <?php
+                /**
+                 * @param string $arg
+                 *                    - foo
+                 *                    - foo2
+                 */
+                function foo(string $arg) {}
+                EOD,
+        ];
+
+        yield 'multiline @return must be kept even if there is no description on the phpdoc tag line' => [
+            <<<'EOD'
+                <?php
+                /**
+                 * @return string
+                 *                - foo
+                 *                - foo2
+                 */
+                function foo(string $arg): string {}
+                EOD,
+        ];
+
+        yield 'multiline @var must be kept even if there is no description on the phpdoc tag line' => [
+            <<<'EOD'
+                <?php
+                class Cl {
+                    /**
+                     * @var string
+                     *             - foo
+                     *             - foo2
+                     */
+                    public string $prop;
+                }
+                EOD,
+        ];
+
+        yield '@param for hidden parameter with option disabled' => [
+            <<<'EOD'
+                <?php
+                /**
+                 */
+                function foo(array $bundleConfig, \ReflectionClass $bundle, ContainerBuilder $container, /* string $bundleDir1 = null, */ $foo1/** , string $bundleDir2 = null */, $foo2 /* , mixed $bundleDir3 */) {}
+                EOD,
+            <<<'EOD'
+                <?php
+                /**
+                 * @param array   $bundleConfig
+                 * @param ?string $bundleDir1
+                 * @param ?string $bundleDir2
+                 * @param mixed   $bundleDir3
+                 */
+                function foo(array $bundleConfig, \ReflectionClass $bundle, ContainerBuilder $container, /* string $bundleDir1 = null, */ $foo1/** , string $bundleDir2 = null */, $foo2 /* , mixed $bundleDir3 */) {}
+                EOD,
+            ['allow_hidden_params' => false],
+        ];
+
+        yield '@param for hidden parameter with option enabled' => [
+            <<<'EOD'
+                <?php
+                /**
+                 * @param ?string $bundleDir1
+                 * @param ?string $bundleDir2
+                 */
+                function foo(array $bundleConfig, \ReflectionClass $bundle, ContainerBuilder $container, /* string $bundleDir1 = null, */ $foo1/** , string $bundleDir2 = null */, $foo2 /* , mixed $bundleDir3 */) {}
+                EOD,
+            <<<'EOD'
+                <?php
+                /**
+                 * @param array   $bundleConfig
+                 * @param ?string $bundleDir1
+                 * @param ?string $bundleDir2
+                 * @param mixed   $bundleDir3
+                 */
+                function foo(array $bundleConfig, \ReflectionClass $bundle, ContainerBuilder $container, /* string $bundleDir1 = null, */ $foo1/** , string $bundleDir2 = null */, $foo2 /* , mixed $bundleDir3 */) {}
+                EOD,
+            ['allow_hidden_params' => true],
+        ];
     }
 
     /**
      * @param array<string, mixed> $config
      *
-     * @dataProvider provideFixPhp80Cases
+     * @dataProvider provideFix80Cases
      *
      * @requires PHP 8.0
      */
-    public function testFixPhp80(string $expected, ?string $input = null, array $config = []): void
+    public function testFix80(string $expected, ?string $input = null, array $config = []): void
     {
         $this->fixer->configure($config);
         $this->doTest($expected, $input);
     }
 
-    public static function provideFixPhp80Cases(): iterable
+    public static function provideFix80Cases(): iterable
     {
         yield 'static return' => [
             '<?php

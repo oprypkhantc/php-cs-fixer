@@ -253,7 +253,15 @@ The rule is part of the following rule sets:
 
   ``['default' => 'at_least_single_space']``
 
+- `@PER-CS <./../../ruleSets/PER-CS.rst>`_ with config:
+
+  ``['default' => 'at_least_single_space']``
+
 - `@PER-CS1.0 <./../../ruleSets/PER-CS1.0.rst>`_ with config:
+
+  ``['default' => 'at_least_single_space']``
+
+- `@PER-CS2.0 <./../../ruleSets/PER-CS2.0.rst>`_ with config:
 
   ``['default' => 'at_least_single_space']``
 
@@ -264,3 +272,10 @@ The rule is part of the following rule sets:
 - `@PhpCsFixer <./../../ruleSets/PhpCsFixer.rst>`_
 - `@Symfony <./../../ruleSets/Symfony.rst>`_
 
+References
+----------
+
+- Fixer class: `PhpCsFixer\\Fixer\\Operator\\BinaryOperatorSpacesFixer <./../../../src/Fixer/Operator/BinaryOperatorSpacesFixer.php>`_
+- Test class: `PhpCsFixer\\Tests\\Fixer\\Operator\\BinaryOperatorSpacesFixerTest <./../../../tests/Fixer/Operator/BinaryOperatorSpacesFixerTest.php>`_
+
+The test class defines officially supported behaviour. Each test case is a part of our backward compatibility promise.

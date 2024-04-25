@@ -2,7 +2,15 @@
 Rule set ``@Symfony:risky``
 ===========================
 
-Rules that follow the official `Symfony Coding Standards <https://symfony.com/doc/current/contributing/code/standards.html>`_. This set contains rules that are risky.
+Rules that follow the official `Symfony Coding Standards <https://symfony.com/doc/current/contributing/code/standards.html>`_.
+
+Warning
+-------
+
+This set contains rules that are risky
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Using this rule set may lead to changes in your code's logic and behaviour. Use it with caution and review changes before incorporating them into your code base.
 
 Rules
 -----
@@ -24,6 +32,7 @@ Rules
 - `implode_call <./../rules/function_notation/implode_call.rst>`_
 - `is_null <./../rules/language_construct/is_null.rst>`_
 - `logical_operators <./../rules/operator/logical_operators.rst>`_
+- `long_to_shorthand_operator <./../rules/operator/long_to_shorthand_operator.rst>`_
 - `modernize_strpos <./../rules/alias/modernize_strpos.rst>`_
 - `modernize_types_casting <./../rules/cast_notation/modernize_types_casting.rst>`_
 - `native_constant_invocation <./../rules/constant_notation/native_constant_invocation.rst>`_ with config:
@@ -51,8 +60,3 @@ Rules
 - `string_length_to_empty <./../rules/string_notation/string_length_to_empty.rst>`_
 - `string_line_ending <./../rules/string_notation/string_line_ending.rst>`_
 - `ternary_to_elvis_operator <./../rules/operator/ternary_to_elvis_operator.rst>`_
-
-Disabled rules
---------------
-
-- `no_unreachable_default_argument_value <./../rules/function_notation/no_unreachable_default_argument_value.rst>`_

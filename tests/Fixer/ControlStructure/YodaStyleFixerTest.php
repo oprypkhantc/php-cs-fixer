@@ -15,6 +15,7 @@ declare(strict_types=1);
 namespace PhpCsFixer\Tests\Fixer\ControlStructure;
 
 use PhpCsFixer\ConfigurationException\InvalidFixerConfigurationException;
+use PhpCsFixer\FixerDefinition\FixerDefinitionInterface;
 use PhpCsFixer\Tests\Test\AbstractFixerTestCase;
 
 /**
@@ -220,26 +221,6 @@ if ($a = $obj instanceof A === true) {
         yield [
             '<?php while(1 === $a ? 1 : 2){};',
             '<?php while($a === 1 ? 1 : 2){};',
-        ];
-
-        yield [
-            '<?php $a = 1 === include_once $a ? 1 : 2;',
-            '<?php $a = include_once $a === 1 ? 1 : 2;',
-        ];
-
-        yield [
-            '<?php echo 1 === include $a ? 1 : 2;',
-            '<?php echo include $a === 1 ? 1 : 2;',
-        ];
-
-        yield [
-            '<?php echo 1 === require_once $a ? 1 : 2;',
-            '<?php echo require_once $a === 1 ? 1 : 2;',
-        ];
-
-        yield [
-            '<?php echo 1 === require $a ? 1 : 2;',
-            '<?php echo require $a === 1 ? 1 : 2;',
         ];
 
         yield [
@@ -867,6 +848,31 @@ switch ($a) {
 }
 ',
         ];
+
+        yield 'require' => [
+            '<?php require 1 === $var ? "A.php" : "B.php";',
+            '<?php require $var === 1 ? "A.php" : "B.php";',
+        ];
+
+        yield 'require_once' => [
+            '<?php require_once 1 === $var ? "A.php" : "B.php";',
+            '<?php require_once $var === 1 ? "A.php" : "B.php";',
+        ];
+
+        yield 'include' => [
+            '<?php include 1 === $var ? "A.php" : "B.php";',
+            '<?php include $var === 1 ? "A.php" : "B.php";',
+        ];
+
+        yield 'include_once' => [
+            '<?php include_once 1 === $var ? "A.php" : "B.php";',
+            '<?php include_once $var === 1 ? "A.php" : "B.php";',
+        ];
+
+        yield 'yield from' => [
+            '<?php function test() {return yield from 1 === $a ? $c : $d;};',
+            '<?php function test() {return yield from $a === 1 ? $c : $d;};',
+        ];
     }
 
     /**
@@ -930,7 +936,7 @@ switch ($a) {
     }
 
     /**
-     * @param array<mixed> $config
+     * @param array<string, mixed> $config
      *
      * @dataProvider provideInvalidConfigCases
      */
@@ -951,7 +957,7 @@ switch ($a) {
 
     public function testDefinition(): void
     {
-        self::assertInstanceOf(\PhpCsFixer\FixerDefinition\FixerDefinitionInterface::class, $this->fixer->getDefinition());
+        self::assertInstanceOf(FixerDefinitionInterface::class, $this->fixer->getDefinition());
     }
 
     /**
@@ -1215,7 +1221,7 @@ if ($a = $obj instanceof (foo()) === true) {
      *
      * @requires PHP 8.1
      */
-    public function testFix81(string $expected, string $input = null): void
+    public function testFix81(string $expected, ?string $input = null): void
     {
         $this->doTest($expected, $input);
     }

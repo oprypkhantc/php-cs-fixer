@@ -50,6 +50,8 @@ final class PhpUnitStrictFixerTest extends AbstractFixerTestCase
 
             yield [self::generateTest("\$this->{$methodBefore}(1, 2, 'message', \$toMuch);")];
 
+            yield [self::generateTest('$this->assertEquals;')];
+
             yield [
                 self::generateTest("\$this->{$methodAfter}(1, 2);"),
                 self::generateTest("\$this->{$methodBefore}(1, 2);"),
@@ -102,21 +104,8 @@ final class PhpUnitStrictFixerTest extends AbstractFixerTestCase
                 self::generateTest("self::{$methodBefore}(1, \$a, '', );"),
             ];
         }
-    }
 
-    /**
-     * Only method calls with 2 or 3 arguments should be fixed.
-     *
-     * @dataProvider provideNoFixWithWrongNumberOfArgumentsCases
-     */
-    public function testNoFixWithWrongNumberOfArguments(string $expected): void
-    {
-        $this->fixer->configure(['assertions' => array_keys(self::getMethodsMap())]);
-        $this->doTest($expected);
-    }
-
-    public static function provideNoFixWithWrongNumberOfArgumentsCases(): iterable
-    {
+        // Only method calls with 2 or 3 arguments should be fixed.
         foreach (self::getMethodsMap() as $candidate => $fix) {
             yield sprintf('do not change call to "%s" without arguments.', $candidate) => [
                 self::generateTest(sprintf('$this->%s();', $candidate)),
@@ -136,7 +125,7 @@ final class PhpUnitStrictFixerTest extends AbstractFixerTestCase
         }
     }
 
-    public function testInvalidConfig(): void
+    public function testInvalidConfiguration(): void
     {
         $this->expectException(InvalidFixerConfigurationException::class);
         $this->expectExceptionMessageMatches('/^\[php_unit_strict\] Invalid configuration: The option "assertions" .*\.$/');

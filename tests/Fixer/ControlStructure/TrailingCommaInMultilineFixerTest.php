@@ -33,13 +33,13 @@ final class TrailingCommaInMultilineFixerTest extends AbstractFixerTestCase
      *
      * @dataProvider provideInvalidConfigurationCases
      *
-     * @param mixed $exceptionMessega
+     * @param mixed $exceptionMessage
      * @param mixed $configuration
      */
-    public function testInvalidConfiguration($exceptionMessega, $configuration): void
+    public function testInvalidConfiguration($exceptionMessage, $configuration): void
     {
         $this->expectException(InvalidForEnvFixerConfigurationException::class);
-        $this->expectExceptionMessage($exceptionMessega);
+        $this->expectExceptionMessage($exceptionMessage);
 
         $this->fixer->configure($configuration);
     }
@@ -583,8 +583,7 @@ $a
                         foo
                         EOD,
                 ];
-                EXPECTED
-            ,
+                EXPECTED,
             <<<'INPUT'
                 <?php
                 $a = [
@@ -592,8 +591,7 @@ $a
                         foo
                         EOD
                 ];
-                INPUT
-            ,
+                INPUT,
             ['after_heredoc' => true],
         ];
 

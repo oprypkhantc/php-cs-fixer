@@ -15,9 +15,10 @@ declare(strict_types=1);
 namespace PhpCsFixer\Tests;
 
 use PhpCsFixer\Fixer\FixerInterface;
+use PhpCsFixer\FixerDefinition\FixerDefinitionInterface;
 use PhpCsFixer\Tokenizer\Token;
+use PhpCsFixer\Tokenizer\Tokens;
 use PhpCsFixer\Utils;
-use Symfony\Bridge\PhpUnit\ExpectDeprecationTrait;
 
 /**
  * @author Dariusz Rumiński <dariusz.ruminski@gmail.com>
@@ -30,8 +31,6 @@ use Symfony\Bridge\PhpUnit\ExpectDeprecationTrait;
  */
 final class UtilsTest extends TestCase
 {
-    use ExpectDeprecationTrait;
-
     /**
      * @var null|false|string
      */
@@ -45,6 +44,8 @@ final class UtilsTest extends TestCase
     protected function tearDown(): void
     {
         putenv("PHP_CS_FIXER_FUTURE_MODE={$this->originalValueOfFutureMode}");
+
+        parent::tearDown();
     }
 
     /**
@@ -52,7 +53,7 @@ final class UtilsTest extends TestCase
      *
      * @dataProvider provideCamelCaseToUnderscoreCases
      */
-    public function testCamelCaseToUnderscore(string $expected, string $input = null): void
+    public function testCamelCaseToUnderscore(string $expected, ?string $input = null): void
     {
         if (null !== $input) {
             self::assertSame($expected, Utils::camelCaseToUnderscore($input));
@@ -61,6 +62,9 @@ final class UtilsTest extends TestCase
         self::assertSame($expected, Utils::camelCaseToUnderscore($expected));
     }
 
+    /**
+     * @return iterable<array{0: string, 1?: string}>
+     */
     public static function provideCamelCaseToUnderscoreCases(): iterable
     {
         yield [
@@ -121,6 +125,11 @@ final class UtilsTest extends TestCase
             'voyage_éclair',
             'VoyageÉclair',
         ];
+
+        yield [
+            'i_want_to_fully_be_a_snake',
+            'i_wantTo_fully_be_A_Snake',
+        ];
     }
 
     /**
@@ -135,6 +144,9 @@ final class UtilsTest extends TestCase
         self::assertSame($spaces, Utils::calculateTrailingWhitespaceIndent($token));
     }
 
+    /**
+     * @return iterable<array{string, array{int, string}|string}>
+     */
     public static function provideCalculateTrailingWhitespaceIndentCases(): iterable
     {
         yield ['    ', [T_WHITESPACE, "\n\n    "]];
@@ -178,6 +190,9 @@ final class UtilsTest extends TestCase
         );
     }
 
+    /**
+     * @return iterable<array{list<mixed>, list<mixed>, callable, callable}>
+     */
     public static function provideStableSortCases(): iterable
     {
         yield [
@@ -256,7 +271,7 @@ final class UtilsTest extends TestCase
     }
 
     /**
-     * @return iterable<array<null|array<string>|string>>
+     * @return iterable<array{0: string, 1: list<string>, 2?: string}>
      */
     public static function provideNaturalLanguageJoinCases(): iterable
     {
@@ -347,6 +362,9 @@ final class UtilsTest extends TestCase
         self::assertSame($joined, Utils::naturalLanguageJoinWithBackticks($names));
     }
 
+    /**
+     * @return iterable<array{string, list<string>}>
+     */
     public static function provideNaturalLanguageJoinWithBackticksCases(): iterable
     {
         yield [
@@ -411,6 +429,9 @@ final class UtilsTest extends TestCase
         self::assertSame($expected, Utils::toString($input));
     }
 
+    /**
+     * @return iterable<array{string, mixed}>
+     */
     public static function provideToStringCases(): iterable
     {
         yield ["['a' => 3, 'b' => 'c']", ['a' => 3, 'b' => 'c']];
@@ -438,10 +459,50 @@ final class UtilsTest extends TestCase
 
     private function createFixerDouble(string $name, int $priority): FixerInterface
     {
-        $fixer = $this->prophesize(FixerInterface::class);
-        $fixer->getName()->willReturn($name);
-        $fixer->getPriority()->willReturn($priority);
+        return new class($name, $priority) implements FixerInterface {
+            private string $name;
+            private int $priority;
 
-        return $fixer->reveal();
+            public function __construct(string $name, int $priority)
+            {
+                $this->name = $name;
+                $this->priority = $priority;
+            }
+
+            public function isCandidate(Tokens $tokens): bool
+            {
+                throw new \LogicException('Not implemented.');
+            }
+
+            public function isRisky(): bool
+            {
+                throw new \LogicException('Not implemented.');
+            }
+
+            public function fix(\SplFileInfo $file, Tokens $tokens): void
+            {
+                throw new \LogicException('Not implemented.');
+            }
+
+            public function getDefinition(): FixerDefinitionInterface
+            {
+                throw new \LogicException('Not implemented.');
+            }
+
+            public function getName(): string
+            {
+                return $this->name;
+            }
+
+            public function getPriority(): int
+            {
+                return $this->priority;
+            }
+
+            public function supports(\SplFileInfo $file): bool
+            {
+                throw new \LogicException('Not implemented.');
+            }
+        };
     }
 }

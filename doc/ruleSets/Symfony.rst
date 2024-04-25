@@ -7,7 +7,7 @@ Rules that follow the official `Symfony Coding Standards <https://symfony.com/do
 Rules
 -----
 
-- `@PSR12 <./PSR12.rst>`_
+- `@PER-CS2.0 <./PER-CS2.0.rst>`_
 - `align_multiline_comment <./../rules/phpdoc/align_multiline_comment.rst>`_
 - `array_syntax <./../rules/array_notation/array_syntax.rst>`_
 - `backtick_to_shell_exec <./../rules/alias/backtick_to_shell_exec.rst>`_
@@ -16,7 +16,10 @@ Rules
 
   ``['statements' => ['return']]``
 
-- `cast_spaces <./../rules/cast_notation/cast_spaces.rst>`_
+- `braces_position <./../rules/basic/braces_position.rst>`_ with config:
+
+  ``['allow_single_line_anonymous_functions' => true, 'allow_single_line_empty_anonymous_classes' => true]``
+
 - `class_attributes_separation <./../rules/class_notation/class_attributes_separation.rst>`_ with config:
 
   ``['elements' => ['method' => 'one']]``
@@ -28,10 +31,6 @@ Rules
 - `class_reference_name_casing <./../rules/casing/class_reference_name_casing.rst>`_
 - `clean_namespace <./../rules/namespace_notation/clean_namespace.rst>`_
 - `concat_space <./../rules/operator/concat_space.rst>`_
-- `curly_braces_position <./../rules/basic/curly_braces_position.rst>`_ with config:
-
-  ``['allow_single_line_anonymous_functions' => true, 'allow_single_line_empty_anonymous_classes' => true]``
-
 - `declare_parentheses <./../rules/language_construct/declare_parentheses.rst>`_
 - `echo_tag_syntax <./../rules/php_tag/echo_tag_syntax.rst>`_
 - `empty_loop_body <./../rules/control_structure/empty_loop_body.rst>`_ with config:
@@ -40,6 +39,7 @@ Rules
 
 - `empty_loop_condition <./../rules/control_structure/empty_loop_condition.rst>`_
 - `fully_qualified_strict_types <./../rules/import/fully_qualified_strict_types.rst>`_
+- `function_declaration <./../rules/function_notation/function_declaration.rst>`_
 - `general_phpdoc_tag_rename <./../rules/phpdoc/general_phpdoc_tag_rename.rst>`_ with config:
 
   ``['replacements' => ['inheritDocs' => 'inheritDoc']]``
@@ -60,7 +60,7 @@ Rules
   ``['on_multiline' => 'ignore']``
 
 - `native_function_casing <./../rules/casing/native_function_casing.rst>`_
-- `native_function_type_declaration_casing <./../rules/casing/native_function_type_declaration_casing.rst>`_
+- `native_type_declaration_casing <./../rules/casing/native_type_declaration_casing.rst>`_
 - `no_alias_language_construct_call <./../rules/alias/no_alias_language_construct_call.rst>`_
 - `no_alternative_syntax <./../rules/control_structure/no_alternative_syntax.rst>`_
 - `no_binary_string <./../rules/string_notation/no_binary_string.rst>`_
@@ -81,16 +81,16 @@ Rules
 - `no_spaces_around_offset <./../rules/whitespace/no_spaces_around_offset.rst>`_
 - `no_superfluous_phpdoc_tags <./../rules/phpdoc/no_superfluous_phpdoc_tags.rst>`_ with config:
 
-  ``['remove_inheritdoc' => true]``
+  ``['allow_hidden_params' => true, 'remove_inheritdoc' => true]``
 
 - `no_trailing_comma_in_singleline <./../rules/basic/no_trailing_comma_in_singleline.rst>`_
+- `no_unneeded_braces <./../rules/control_structure/no_unneeded_braces.rst>`_ with config:
+
+  ``['namespaces' => true]``
+
 - `no_unneeded_control_parentheses <./../rules/control_structure/no_unneeded_control_parentheses.rst>`_ with config:
 
   ``['statements' => ['break', 'clone', 'continue', 'echo_print', 'others', 'return', 'switch_case', 'yield', 'yield_from']]``
-
-- `no_unneeded_curly_braces <./../rules/control_structure/no_unneeded_curly_braces.rst>`_ with config:
-
-  ``['namespaces' => true]``
 
 - `no_unneeded_import_alias <./../rules/import/no_unneeded_import_alias.rst>`_
 - `no_unset_cast <./../rules/cast_notation/no_unset_cast.rst>`_
@@ -99,10 +99,8 @@ Rules
 - `no_useless_nullsafe_operator <./../rules/operator/no_useless_nullsafe_operator.rst>`_
 - `no_whitespace_before_comma_in_array <./../rules/array_notation/no_whitespace_before_comma_in_array.rst>`_
 - `normalize_index_brace <./../rules/array_notation/normalize_index_brace.rst>`_
-- `nullable_type_declaration_for_default_null_value <./../rules/function_notation/nullable_type_declaration_for_default_null_value.rst>`_ with config:
-
-  ``['use_nullable_type_declaration' => false]``
-
+- `nullable_type_declaration <./../rules/language_construct/nullable_type_declaration.rst>`_
+- `nullable_type_declaration_for_default_null_value <./../rules/function_notation/nullable_type_declaration_for_default_null_value.rst>`_
 - `object_operator_without_whitespace <./../rules/operator/object_operator_without_whitespace.rst>`_
 - `operator_linebreak <./../rules/operator/operator_linebreak.rst>`_ with config:
 
@@ -111,6 +109,10 @@ Rules
 - `ordered_imports <./../rules/import/ordered_imports.rst>`_ with config:
 
   ``['imports_order' => ['class', 'function', 'const'], 'sort_algorithm' => 'alpha']``
+
+- `ordered_types <./../rules/class_notation/ordered_types.rst>`_ with config:
+
+  ``['null_adjustment' => 'always_last', 'sort_algorithm' => 'none']``
 
 - `php_unit_fqcn_annotation <./../rules/php_unit/php_unit_fqcn_annotation.rst>`_
 - `php_unit_method_casing <./../rules/php_unit/php_unit_method_casing.rst>`_
@@ -128,7 +130,10 @@ Rules
 
 - `phpdoc_return_self_reference <./../rules/phpdoc/phpdoc_return_self_reference.rst>`_
 - `phpdoc_scalar <./../rules/phpdoc/phpdoc_scalar.rst>`_
-- `phpdoc_separation <./../rules/phpdoc/phpdoc_separation.rst>`_
+- `phpdoc_separation <./../rules/phpdoc/phpdoc_separation.rst>`_ with config:
+
+  ``['groups' => [['Annotation', 'NamedArgumentConstructor', 'Target'], ['author', 'copyright', 'license'], ['category', 'package', 'subpackage'], ['property', 'property-read', 'property-write'], ['deprecated', 'link', 'see', 'since']]]``
+
 - `phpdoc_single_line_var_spacing <./../rules/phpdoc/phpdoc_single_line_var_spacing.rst>`_
 - `phpdoc_summary <./../rules/phpdoc/phpdoc_summary.rst>`_
 - `phpdoc_tag_type <./../rules/phpdoc/phpdoc_tag_type.rst>`_ with config:
@@ -162,6 +167,10 @@ Rules
 
 - `standardize_increment <./../rules/operator/standardize_increment.rst>`_
 - `standardize_not_equals <./../rules/operator/standardize_not_equals.rst>`_
+- `statement_indentation <./../rules/whitespace/statement_indentation.rst>`_ with config:
+
+  ``['stick_comment_to_next_continuous_control_statement' => true]``
+
 - `switch_continue_to_break <./../rules/control_structure/switch_continue_to_break.rst>`_
 - `trailing_comma_in_multiline <./../rules/control_structure/trailing_comma_in_multiline.rst>`_
 - `trim_array_spaces <./../rules/array_notation/trim_array_spaces.rst>`_
@@ -170,3 +179,8 @@ Rules
 - `unary_operator_spaces <./../rules/operator/unary_operator_spaces.rst>`_
 - `whitespace_after_comma_in_array <./../rules/array_notation/whitespace_after_comma_in_array.rst>`_
 - `yoda_style <./../rules/control_structure/yoda_style.rst>`_
+
+Disabled rules
+--------------
+
+- `single_line_empty_body <./../rules/basic/single_line_empty_body.rst>`_

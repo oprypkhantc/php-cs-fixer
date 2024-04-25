@@ -105,12 +105,13 @@ abstract class AbstractIntegrationCaseFactory implements IntegrationCaseFactoryI
     /**
      * Parses the '--REQUIREMENTS--' block of a '.test' file and determines requirements.
      *
-     * @return array{php: int, "php<"?: int, os: list<string>}
+     * @return array{php: int, "php<": int, os: list<string>}
      */
     protected function determineRequirements(SplFileInfo $file, ?string $config): array
     {
         $parsed = $this->parseJson($config, [
             'php' => \PHP_VERSION_ID,
+            'php<' => PHP_INT_MAX,
             'os' => ['Linux', 'Darwin', 'Windows'],
         ]);
 
@@ -118,6 +119,13 @@ abstract class AbstractIntegrationCaseFactory implements IntegrationCaseFactoryI
             throw new \InvalidArgumentException(sprintf(
                 'Expected int value like 50509 for "php", got "%s".',
                 get_debug_type($parsed['php']).'#'.$parsed['php'],
+            ));
+        }
+
+        if (!\is_int($parsed['php<'])) {
+            throw new \InvalidArgumentException(sprintf(
+                'Expected int value like 80301 for "php<", got "%s".',
+                get_debug_type($parsed['php<']).'#'.$parsed['php<'],
             ));
         }
 
@@ -217,11 +225,11 @@ abstract class AbstractIntegrationCaseFactory implements IntegrationCaseFactoryI
     }
 
     /**
-     * @param null|array<mixed> $template
+     * @param null|array<string, mixed> $template
      *
-     * @return array<mixed>
+     * @return array<string, mixed>
      */
-    private function parseJson(?string $encoded, array $template = null): array
+    private function parseJson(?string $encoded, ?array $template = null): array
     {
         // content is optional if template is provided
         if ((null === $encoded || '' === $encoded) && null !== $template) {

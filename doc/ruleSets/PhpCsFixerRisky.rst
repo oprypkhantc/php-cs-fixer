@@ -2,12 +2,20 @@
 Rule set ``@PhpCsFixer:risky``
 ==============================
 
-Rule set as used by the PHP-CS-Fixer development team, highly opinionated. This set contains rules that are risky.
+Rule set as used by the PHP-CS-Fixer development team, highly opinionated.
+
+Warning
+-------
+
+This set contains rules that are risky
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Using this rule set may lead to changes in your code's logic and behaviour. Use it with caution and review changes before incorporating them into your code base.
 
 Rules
 -----
 
-- `@PER:risky <./PERRisky.rst>`_
+- `@PER-CS:risky <./PER-CSRisky.rst>`_
 - `@Symfony:risky <./SymfonyRisky.rst>`_
 - `comment_to_phpdoc <./../rules/comment/comment_to_phpdoc.rst>`_
 - `final_internal_class <./../rules/class_notation/final_internal_class.rst>`_
@@ -19,10 +27,13 @@ Rules
 
   ``['sets' => ['@all']]``
 
-- `no_unreachable_default_argument_value <./../rules/function_notation/no_unreachable_default_argument_value.rst>`_
 - `no_unset_on_property <./../rules/language_construct/no_unset_on_property.rst>`_
 - `php_unit_data_provider_name <./../rules/php_unit/php_unit_data_provider_name.rst>`_
 - `php_unit_data_provider_return_type <./../rules/php_unit/php_unit_data_provider_return_type.rst>`_
+- `php_unit_data_provider_static <./../rules/php_unit/php_unit_data_provider_static.rst>`_ with config:
+
+  ``['force' => true]``
+
 - `php_unit_strict <./../rules/php_unit/php_unit_strict.rst>`_
 - `php_unit_test_case_static_method_calls <./../rules/php_unit/php_unit_test_case_static_method_calls.rst>`_ with config:
 
@@ -31,6 +42,7 @@ Rules
 - `static_lambda <./../rules/function_notation/static_lambda.rst>`_
 - `strict_comparison <./../rules/strict/strict_comparison.rst>`_
 - `strict_param <./../rules/strict/strict_param.rst>`_
+- `yield_from_array_to_yields <./../rules/array_notation/yield_from_array_to_yields.rst>`_
 
 Disabled rules
 --------------

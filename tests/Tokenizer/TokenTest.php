@@ -307,7 +307,8 @@ final class TokenTest extends TestCase
     }
 
     /**
-     * @param mixed $prototype
+     * @param mixed                     $prototype
+     * @param ?class-string<\Throwable> $expectedExceptionClass
      *
      * @dataProvider provideCreatingTokenCases
      */
@@ -407,7 +408,7 @@ final class TokenTest extends TestCase
         yield [$function, false, [T_FUNCTION, 'function', 'unexpected']];
 
         yield [new Token('&'), true, '&'];
-        if (\defined('T_AMPERSAND_FOLLOWED_BY_VAR_OR_VARARG')) { // @TODO: drop condition with new MAJOR release 4.0
+        if (\defined('T_AMPERSAND_FOLLOWED_BY_VAR_OR_VARARG')) { // @TODO: drop condition when PHP 8.1+ is required
             yield [new Token('&'), true, new Token([T_AMPERSAND_FOLLOWED_BY_VAR_OR_VARARG, '&'])];
 
             yield [new Token('&'), true, new Token([T_AMPERSAND_NOT_FOLLOWED_BY_VAR_OR_VARARG, '&'])];
@@ -468,9 +469,12 @@ final class TokenTest extends TestCase
      * @param bool|list<bool> $caseSensitive
      *
      * @dataProvider provideIsKeyCaseSensitiveCases
+     *
+     * @group legacy
      */
     public function testIsKeyCaseSensitive(bool $isKeyCaseSensitive, $caseSensitive, int $key): void
     {
+        $this->expectDeprecation('Method "PhpCsFixer\Tokenizer\Token::isKeyCaseSensitive" is deprecated and will be removed in the next major version.');
         self::assertSame($isKeyCaseSensitive, Token::isKeyCaseSensitive($caseSensitive, $key));
     }
 

@@ -60,7 +60,7 @@ final class SpacesInsideParenthesesFixerTest extends AbstractFixerTestCase
     }
 
     /**
-     * @return array<array{0: string, 1?: string}>
+     * @return iterable<array{0: string, 1?: string}>
      */
     public static function provideDefaultFixCases(): iterable
     {
@@ -241,10 +241,20 @@ multiply((2 + 3) * 4);
 multiply( (    2 + 3  ) * 4    );
 ',
         ];
+
+        yield [
+            '<?php $x = (new Foo())->bar();',
+            '<?php $x = ( new Foo() )->bar();',
+        ];
+
+        yield [
+            '<?php $x = (new Foo)->bar;',
+            '<?php $x = ( new Foo )->bar;',
+        ];
     }
 
     /**
-     * @return array<array{0: string, 1?: string}>
+     * @return iterable<array{0: string, 1?: string}>
      */
     public static function provideSpacesFixCases(): iterable
     {
@@ -422,6 +432,11 @@ multiply( ( 2 + 3 ) * 4 );
             '<?php
 multiply((2 + 3) * 4);
 ',
+        ];
+
+        yield [
+            '<?php $x = ( new Foo() )->bar();',
+            '<?php $x = (new Foo())->bar();',
         ];
     }
 

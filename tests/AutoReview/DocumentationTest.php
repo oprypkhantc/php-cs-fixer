@@ -14,25 +14,22 @@ declare(strict_types=1);
 
 namespace PhpCsFixer\Tests\AutoReview;
 
+use PhpCsFixer\Console\Report\FixReport\ReporterFactory;
 use PhpCsFixer\Documentation\DocumentationLocator;
 use PhpCsFixer\Documentation\FixerDocumentGenerator;
-use PhpCsFixer\Documentation\ListDocumentGenerator;
 use PhpCsFixer\Documentation\RuleSetDocumentationGenerator;
 use PhpCsFixer\Fixer\FixerInterface;
 use PhpCsFixer\FixerFactory;
 use PhpCsFixer\RuleSet\RuleSets;
-use PHPUnit\Framework\TestCase;
+use PhpCsFixer\Tests\TestCase;
 use Symfony\Component\Finder\Finder;
 
 /**
  * @internal
  *
- * @covers \PhpCsFixer\Documentation\DocumentationLocator
- * @covers \PhpCsFixer\Documentation\FixerDocumentGenerator
- * @covers \PhpCsFixer\Documentation\ListDocumentGenerator
- * @covers \PhpCsFixer\Documentation\RstUtils
- * @covers \PhpCsFixer\Documentation\RuleSetDocumentationGenerator
+ * @coversNothing
  *
+ * @group legacy
  * @group auto-review
  */
 final class DocumentationTest extends TestCase
@@ -42,6 +39,13 @@ final class DocumentationTest extends TestCase
      */
     public function testFixerDocumentationFileIsUpToDate(FixerInterface $fixer): void
     {
+        // @TODO 4.0 Remove this expectations
+        $this->expectDeprecation('Rule set "@PER" is deprecated. Use "@PER-CS" instead.');
+        $this->expectDeprecation('Rule set "@PER:risky" is deprecated. Use "@PER-CS:risky" instead.');
+        if ('nullable_type_declaration_for_default_null_value' === $fixer->getName()) {
+            $this->expectDeprecation('Option "use_nullable_type_declaration" for rule "nullable_type_declaration_for_default_null_value" is deprecated and will be removed in version 4.0. Behaviour will follow default one.');
+        }
+
         $locator = new DocumentationLocator();
         $generator = new FixerDocumentGenerator($locator);
 
@@ -129,7 +133,8 @@ final class DocumentationTest extends TestCase
         $paths = [];
 
         foreach (RuleSets::getSetDefinitions() as $name => $definition) {
-            $paths[$name] = $path = $locator->getRuleSetsDocumentationFilePath($name);
+            $path = $locator->getRuleSetsDocumentationFilePath($name);
+            $paths[$path] = $definition;
 
             self::assertFileEqualsString(
                 $generator->generateRuleSetsDocumentation($definition, $fixers),
@@ -174,19 +179,38 @@ final class DocumentationTest extends TestCase
         );
     }
 
-    public function testListingDocumentationIsUpToDate(): void
+    public function testAllReportFormatsAreInUsageDoc(): void
     {
         $locator = new DocumentationLocator();
-        $generator = new ListDocumentGenerator($locator);
+        $usage = $locator->getUsageFilePath();
+        self::assertFileExists($usage);
 
-        $fixers = self::getFixers();
-        $listingFilePath = $locator->getListingFilePath();
+        $usage = file_get_contents($usage);
+        self::assertIsString($usage);
 
-        self::assertFileEqualsString(
-            $generator->generateListingDocumentation($fixers),
-            $listingFilePath,
-            sprintf('Listing documentation is generated (please CONTRIBUTING.md), file "%s".', $listingFilePath)
+        $reporterFactory = new ReporterFactory();
+        $reporterFactory->registerBuiltInReporters();
+
+        $formats = array_filter(
+            $reporterFactory->getFormats(),
+            static fn (string $format): bool => 'txt' !== $format,
         );
+
+        foreach ($formats as $format) {
+            self::assertStringContainsString(sprintf('* ``%s``', $format), $usage);
+        }
+
+        $lastFormat = array_pop($formats);
+        $expectedContent = 'Supported formats are ``txt`` (default one), ';
+
+        foreach ($formats as $format) {
+            $expectedContent .= '``'.$format.'``, ';
+        }
+
+        $expectedContent = substr($expectedContent, 0, -2);
+        $expectedContent .= ' and ``'.$lastFormat.'``.';
+
+        self::assertStringContainsString($expectedContent, $usage);
     }
 
     private static function assertFileEqualsString(string $expectedString, string $actualFilePath, string $message = ''): void

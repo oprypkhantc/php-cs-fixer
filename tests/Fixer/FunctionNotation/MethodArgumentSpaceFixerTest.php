@@ -387,16 +387,14 @@ $a#
                     'b',
                     'c'
                 );
-                EXPECTED
-            ,
+                EXPECTED,
             <<<'INPUT'
                 <?php
                 functionCall(
                     'a', 'b',
                     'c'
                 );
-                INPUT
-            ,
+                INPUT,
         ];
 
         yield 'test wrongly formatted half-multiline function becomes fully-multiline' => [
@@ -422,8 +420,7 @@ f(1,2,
 
                 TEXT
                 );
-                EXPECTED
-            ,
+                EXPECTED,
             <<<'INPUT'
                 <?php
                 str_replace("\n", PHP_EOL, <<<'TEXT'
@@ -431,8 +428,7 @@ f(1,2,
 
                 TEXT
                 );
-                INPUT
-            ,
+                INPUT,
         ];
 
         yield 'test barely multiline function with blank lines becomes fully-multiline' => [
@@ -443,15 +439,13 @@ f(1,2,
                     'b',
                     'c'
                 );
-                EXPECTED
-            ,
+                EXPECTED,
             <<<'INPUT'
                 <?php
                 functionCall('a', 'b',
 
                     'c');
-                INPUT
-            ,
+                INPUT,
         ];
 
         yield 'test indentation is preserved' => [
@@ -464,8 +458,7 @@ f(1,2,
                         'c'
                     );
                 }
-                EXPECTED
-            ,
+                EXPECTED,
             <<<'INPUT'
                 <?php
                 if (true) {
@@ -474,8 +467,7 @@ f(1,2,
                         'c'
                     );
                 }
-                INPUT
-            ,
+                INPUT,
         ];
 
         yield 'test multiline array arguments do not trigger multiline' => [
@@ -486,8 +478,7 @@ f(1,2,
                     'b',
                     'c',
                 ), 42);
-                EXPECTED
-            ,
+                EXPECTED,
         ];
 
         yield 'test multiline function arguments do not trigger multiline' => [
@@ -496,8 +487,7 @@ f(1,2,
                 defraculate(1, function () {
                     $a = 42;
                 }, 42);
-                EXPECTED
-            ,
+                EXPECTED,
         ];
 
         yield 'test violation after opening parenthesis' => [
@@ -508,14 +498,12 @@ f(1,2,
                     2,
                     3
                 );
-                EXPECTED
-            ,
+                EXPECTED,
             <<<'INPUT'
                 <?php
                 defraculate(
                     1, 2, 3);
-                INPUT
-            ,
+                INPUT,
         ];
 
         yield 'test violation after opening parenthesis, indented with two spaces' => [
@@ -526,14 +514,12 @@ f(1,2,
                   2,
                   3
                 );
-                EXPECTED
-            ,
+                EXPECTED,
             <<<'INPUT'
                 <?php
                 defraculate(
                   1, 2, 3);
-                INPUT
-            ,
+                INPUT,
         ];
 
         yield 'test violation after opening parenthesis, indented with tabs' => [
@@ -544,14 +530,12 @@ f(1,2,
                 	2,
                 	3
                 );
-                EXPECTED
-            ,
+                EXPECTED,
             <<<'INPUT'
                 <?php
                 defraculate(
                 	1, 2, 3);
-                INPUT
-            ,
+                INPUT,
         ];
 
         yield 'test violation before closing parenthesis' => [
@@ -562,14 +546,12 @@ f(1,2,
                     2,
                     3
                 );
-                EXPECTED
-            ,
+                EXPECTED,
             <<<'INPUT'
                 <?php
                 defraculate(1, 2, 3
                 );
-                INPUT
-            ,
+                INPUT,
         ];
 
         yield 'test violation before closing parenthesis in nested call' => [
@@ -580,14 +562,12 @@ f(1,2,
                     2,
                     3
                 ), 'morty');
-                EXPECTED
-            ,
+                EXPECTED,
             <<<'INPUT'
                 <?php
                 getSchwifty('rick', defraculate(1, 2, 3
                 ), 'morty');
-                INPUT
-            ,
+                INPUT,
         ];
 
         yield 'test with comment between arguments' => [
@@ -598,16 +578,14 @@ f(1,2,
                     'b',
                     'c'
                 );
-                EXPECTED
-            ,
+                EXPECTED,
             <<<'INPUT'
                 <?php
                 functionCall(
                     'a',/* comment */'b',
                     'c'
                 );
-                INPUT
-            ,
+                INPUT,
         ];
 
         yield 'test with deeply nested arguments' => [
@@ -627,8 +605,7 @@ f(1,2,
                         ),
                     ]
                 );
-                EXPECTED
-            ,
+                EXPECTED,
             <<<'INPUT'
                 <?php
                 foo('a',
@@ -641,8 +618,7 @@ f(1,2,
                                 'i',
                             ]),
                     ]);
-                INPUT
-            ,
+                INPUT,
         ];
 
         yield 'multiline string argument' => [
@@ -653,8 +629,7 @@ f(1,2,
                 class FooClass
                 {
                 }', $comment, false);
-                UNAFFECTED
-            ,
+                UNAFFECTED,
         ];
 
         yield 'arrays with whitespace inside' => [
@@ -666,8 +641,7 @@ f(1,2,
                 $a = array/***/(123,  7);
                 $a = array (        1,
                 2);
-                UNAFFECTED
-            ,
+                UNAFFECTED,
         ];
 
         yield 'test code that should not be affected (because not a function nor a method)' => [
@@ -678,8 +652,7 @@ f(1,2,
                     ) {
                     // do whatever
                 }
-                UNAFFECTED
-            ,
+                UNAFFECTED,
         ];
 
         yield 'test ungodly code' => [
@@ -702,8 +675,7 @@ f(1,2,
                     $d1
                 ) {
                 };
-                EXPECTED
-            ,
+                EXPECTED,
             <<<'INPUT'
                 <?php
                 $a = function#
@@ -719,8 +691,7 @@ f(1,2,
                 use ($b1,
                 $c1,$d1) {
                 };
-                INPUT
-            ,
+                INPUT,
         ];
 
         yield 'test list' => [
@@ -736,8 +707,7 @@ f(1,2,
                 array(1,
                     2,3
                 );
-                UNAFFECTED
-            ,
+                UNAFFECTED,
         ];
 
         yield 'test function argument with multiline echo in it' => [
@@ -747,8 +717,7 @@ f(1,2,
                     echo 'a',
                       'b';
                 }, $argv);
-                UNAFFECTED
-            ,
+                UNAFFECTED,
         ];
 
         yield 'test function argument with oneline echo in it' => [
@@ -760,16 +729,14 @@ f(1,2,
                 },
                     $argv
                 );
-                EXPECTED
-            ,
+                EXPECTED,
             <<<'INPUT'
                 <?php
                 call_user_func(function ($arguments) {
                     echo 'a', 'b';
                 },
                 $argv);
-                INPUT
-            ,
+                INPUT,
         ];
 
         yield 'ensure_single_line' => [
@@ -779,8 +746,7 @@ f(1,2,
                     // foo
                 }
                 foo($a, $b);
-                EXPECTED
-            ,
+                EXPECTED,
             <<<'INPUT'
                 <?php
                 function foo(
@@ -793,8 +759,7 @@ f(1,2,
                     $a,
                     $b
                 );
-                INPUT
-            ,
+                INPUT,
             ['on_multiline' => 'ensure_single_line'],
         ];
 
@@ -811,8 +776,7 @@ f(1,2,
                     $a, /* foo */// bar
                     $b#foo
                 );
-                EXPECTED
-            ,
+                EXPECTED,
             null,
             ['on_multiline' => 'ensure_single_line'],
         ];
@@ -824,8 +788,7 @@ f(1,2,
                     // foo
                 }
                 foo($a, $b);
-                EXPECTED
-            ,
+                EXPECTED,
             <<<'INPUT'
                 <?php
                 function foo(
@@ -850,8 +813,7 @@ f(1,2,
 
 
                 );
-                INPUT
-            ,
+                INPUT,
             ['on_multiline' => 'ensure_single_line'],
         ];
 
@@ -862,8 +824,7 @@ f(1,2,
                     public static function foo1($a, $b, $c) {}
                     private function foo2($a, $b, $c) {}
                 }
-                EXPECTED
-            ,
+                EXPECTED,
             <<<'INPUT'
                 <?php
                 class Foo {
@@ -878,8 +839,7 @@ f(1,2,
                         $c
                     ) {}
                 }
-                INPUT
-            ,
+                INPUT,
             ['on_multiline' => 'ensure_single_line'],
         ];
 
@@ -890,8 +850,7 @@ f(1,2,
                     public static function foo1($a, $b, $c) {}
                     private function foo2($a, $b, $c) {}
                 };
-                EXPECTED
-            ,
+                EXPECTED,
             <<<'INPUT'
                 <?php
                 new class {
@@ -906,8 +865,7 @@ f(1,2,
                         $c
                     ) {}
                 };
-                INPUT
-            ,
+                INPUT,
             ['on_multiline' => 'ensure_single_line'],
         ];
 
@@ -918,8 +876,7 @@ f(1,2,
                     // foo
                 }
                 foo($a,    $b);
-                EXPECTED
-            ,
+                EXPECTED,
             <<<'INPUT'
                 <?php
                 function foo(
@@ -932,8 +889,7 @@ f(1,2,
                     $a,
                     $b
                 );
-                INPUT
-            ,
+                INPUT,
             [
                 'on_multiline' => 'ensure_single_line',
                 'keep_multiple_spaces_after_comma' => true,
@@ -1004,6 +960,62 @@ $example = function () use ($message1,$message2) {
         $f);# comment4
 ',
         ];
+
+        yield [
+            '<?php
+foo(
+    /* bar */
+    "baz"
+);
+            ',
+            '<?php
+foo(
+    /* bar */ "baz"
+);
+            ',
+        ];
+
+        yield [<<<'PHP'
+            <?php
+            function f()
+            {
+                echo <<<TEXT
+                    some text
+                    {$object->method(
+                        42
+                    )}
+                    some text
+                TEXT;
+            }
+            PHP];
+
+        yield [<<<'PHP'
+            <?php
+            function f()
+            {
+                echo <<<'TEXT'
+                    some text
+                    {$object->method(
+                        42
+                    )}
+                    some text
+                TEXT;
+            }
+            PHP];
+
+        yield [<<<'PHP'
+            <?php
+            function f()
+            {
+                echo <<<TEXT
+                    some text
+                    some value: {$object->method(
+                        42
+                    )}
+                    some text
+                TEXT;
+            }
+            PHP];
     }
 
     /**
@@ -1033,8 +1045,7 @@ $example = function () use ($message1,$message2) {
                         EOD,
                     'baz'
                 );
-                EXPECTED
-            ,
+                EXPECTED,
             <<<'INPUT'
                 <?php
                 foo(
@@ -1044,8 +1055,7 @@ $example = function () use ($message1,$message2) {
                     ,
                     'baz'
                 );
-                INPUT
-            ,
+                INPUT,
             ['after_heredoc' => true],
         ];
 
@@ -1056,8 +1066,7 @@ $example = function () use ($message1,$message2) {
                     $bar,
                     $baz,
                 );
-                EXPECTED
-            ,
+                EXPECTED,
             null,
             ['on_multiline' => 'ensure_fully_multiline'],
         ];
@@ -1101,12 +1110,15 @@ $fn = fn(
     }
 
     /**
+     * @param array<string, mixed> $config
+     *
      * @dataProvider provideFix80Cases
      *
      * @requires PHP 8.0
      */
-    public function testFix80(string $expected, ?string $input = null): void
+    public function testFix80(string $expected, ?string $input = null, array $config = []): void
     {
+        $this->fixer->configure($config);
         $this->doTest($expected, $input);
     }
 
@@ -1131,6 +1143,45 @@ class MyClass
         #[Foo] #[Bar] private ?string $name = null,
     ) {}
 }',
+        ];
+
+        yield 'keep attributes as-is' => [
+            '<?php
+class MyClass
+{
+    public function __construct(
+        private string $id,
+        #[Foo] #[Bar] private ?string $name = null,
+    ) {}
+}',
+            null,
+            [
+                'attribute_placement' => 'ignore',
+            ],
+        ];
+
+        yield 'multiple attributes on the same line as argument' => [
+            '<?php
+class MyClass
+{
+    public function __construct(
+        private string $id,
+        #[Foo] #[Bar] private ?string $name = null,
+    ) {}
+}',
+            '<?php
+class MyClass
+{
+    public function __construct(
+        private string $id,
+        #[Foo]
+        #[Bar]
+        private ?string $name = null,
+    ) {}
+}',
+            [
+                'attribute_placement' => 'same_line',
+            ],
         ];
 
         yield 'single attribute markup with comma separated list' => [

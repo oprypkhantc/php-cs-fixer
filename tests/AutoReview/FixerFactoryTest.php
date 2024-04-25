@@ -70,7 +70,7 @@ final class FixerFactoryTest extends TestCase
     }
 
     /**
-     * @param string[] $edges
+     * @param list<string> $edges
      *
      * @dataProvider provideFixersPriorityCasesHaveIntegrationTestCases
      */
@@ -183,7 +183,7 @@ final class FixerFactoryTest extends TestCase
         $previous = '';
 
         foreach (self::getFixersPriorityGraph() as $fixerName => $edges) {
-            self::assertLessThan(0, strcmp($previous, $fixerName), sprintf('Not sorted "%s" "%s".', $previous, $fixerName));
+            self::assertLessThan(0, $previous <=> $fixerName, sprintf('Not sorted "%s" "%s".', $previous, $fixerName));
 
             $edgesSorted = $edges;
             sort($edgesSorted);
@@ -323,11 +323,11 @@ final class FixerFactoryTest extends TestCase
             }
         }
 
-        self::assertEmpty($missing, 'Fixers without default priority and without priority tests: "'.implode('", "', array_keys($missing)).'."');
+        self::assertEmpty($missing, 'Fixers with non-default priority and yet without priority unit tests [vide "getFixersPriorityGraph()" and "getPhpDocFixersPriorityGraph()"]: "'.implode('", "', array_keys($missing)).'."');
     }
 
     /**
-     * @return array<string, string[]>
+     * @return array<string, list<string>>
      */
     private static function getFixersPriorityGraph(): array
     {
@@ -341,6 +341,8 @@ final class FixerFactoryTest extends TestCase
             ],
             'array_syntax' => [
                 'binary_operator_spaces',
+                'single_space_after_construct',
+                'single_space_around_construct',
                 'ternary_operator_spaces',
             ],
             'assign_null_coalescing_to_coalesce_equal' => [
@@ -352,6 +354,7 @@ final class FixerFactoryTest extends TestCase
                 'explicit_string_variable',
                 'native_function_invocation',
                 'single_quote',
+                'string_implicit_backslashes',
             ],
             'blank_line_after_opening_tag' => [
                 'blank_lines_before_namespace',
@@ -359,6 +362,10 @@ final class FixerFactoryTest extends TestCase
             ],
             'braces' => [
                 'heredoc_indentation',
+            ],
+            'braces_position' => [
+                'single_line_empty_body',
+                'statement_indentation',
             ],
             'class_attributes_separation' => [
                 'braces',
@@ -369,6 +376,9 @@ final class FixerFactoryTest extends TestCase
             'class_definition' => [
                 'braces',
                 'single_line_empty_body',
+            ],
+            'class_keyword' => [
+                'fully_qualified_strict_types',
             ],
             'class_keyword_remove' => [
                 'no_unused_imports',
@@ -396,6 +406,7 @@ final class FixerFactoryTest extends TestCase
                 'spaces_inside_parentheses',
             ],
             'control_structure_braces' => [
+                'braces_position',
                 'control_structure_continuation_position',
                 'curly_braces_position',
                 'no_multiple_statements_per_line',
@@ -431,6 +442,9 @@ final class FixerFactoryTest extends TestCase
                 'heredoc_to_nowdoc',
                 'single_quote',
             ],
+            'explicit_string_variable' => [
+                'no_useless_concat_operator',
+            ],
             'final_class' => [
                 'protected_to_private',
                 'self_static_accessor',
@@ -441,11 +455,15 @@ final class FixerFactoryTest extends TestCase
             ],
             'fully_qualified_strict_types' => [
                 'no_superfluous_phpdoc_tags',
+                'ordered_imports',
+                'ordered_interfaces',
+                'statement_indentation',
             ],
             'function_declaration' => [
                 'method_argument_space',
             ],
             'function_to_constant' => [
+                'native_constant_invocation',
                 'native_function_casing',
                 'no_extra_blank_lines',
                 'no_singleline_whitespace_before_semicolons',
@@ -468,6 +486,7 @@ final class FixerFactoryTest extends TestCase
             'global_namespace_import' => [
                 'no_unused_imports',
                 'ordered_imports',
+                'statement_indentation',
             ],
             'header_comment' => [
                 'blank_lines_before_namespace',
@@ -496,6 +515,12 @@ final class FixerFactoryTest extends TestCase
                 'binary_operator_spaces',
                 'ternary_operator_spaces',
             ],
+            'long_to_shorthand_operator' => [
+                'binary_operator_spaces',
+                'no_extra_blank_lines',
+                'no_singleline_whitespace_before_semicolons',
+                'standardize_increment',
+            ],
             'method_argument_space' => [
                 'array_indentation',
                 'statement_indentation',
@@ -515,6 +540,11 @@ final class FixerFactoryTest extends TestCase
             'modernize_types_casting' => [
                 'no_unneeded_control_parentheses',
             ],
+            'multiline_string_to_heredoc' => [
+                'escape_implicit_backslashes',
+                'heredoc_indentation',
+                'string_implicit_backslashes',
+            ],
             'multiline_whitespace_before_semicolons' => [
                 'space_after_semicolon',
             ],
@@ -525,6 +555,9 @@ final class FixerFactoryTest extends TestCase
                 'global_namespace_import',
             ],
             'new_with_braces' => [
+                'class_definition',
+            ],
+            'new_with_parentheses' => [
                 'class_definition',
             ],
             'no_alias_functions' => [
@@ -556,7 +589,6 @@ final class FixerFactoryTest extends TestCase
             'no_empty_phpdoc' => [
                 'no_extra_blank_lines',
                 'no_trailing_whitespace',
-                'no_whitespace_in_blank_line',
             ],
             'no_empty_statement' => [
                 'braces',
@@ -585,6 +617,7 @@ final class FixerFactoryTest extends TestCase
                 'method_argument_space',
             ],
             'no_multiple_statements_per_line' => [
+                'braces_position',
                 'curly_braces_position',
             ],
             'no_php4_constructor' => [
@@ -592,6 +625,9 @@ final class FixerFactoryTest extends TestCase
             ],
             'no_short_bool_cast' => [
                 'cast_spaces',
+            ],
+            'no_space_around_double_colon' => [
+                'method_chaining_indentation',
             ],
             'no_spaces_after_function_name' => [
                 'function_to_constant',
@@ -608,6 +644,12 @@ final class FixerFactoryTest extends TestCase
             'no_superfluous_phpdoc_tags' => [
                 'no_empty_phpdoc',
                 'void_return',
+            ],
+            'no_unneeded_braces' => [
+                'no_useless_else',
+                'no_useless_return',
+                'return_assignment',
+                'simplified_if_return',
             ],
             'no_unneeded_control_parentheses' => [
                 'concat_space',
@@ -642,6 +684,7 @@ final class FixerFactoryTest extends TestCase
                 'set_type_to_cast',
             ],
             'no_useless_else' => [
+                'blank_line_before_statement',
                 'braces',
                 'combine_consecutive_unsets',
                 'no_break_comment',
@@ -650,6 +693,7 @@ final class FixerFactoryTest extends TestCase
                 'no_useless_return',
                 'no_whitespace_in_blank_line',
                 'simplified_if_return',
+                'statement_indentation',
             ],
             'no_useless_return' => [
                 'blank_line_before_statement',
@@ -685,6 +729,12 @@ final class FixerFactoryTest extends TestCase
             ],
             'ordered_types' => [
                 'types_spaces',
+            ],
+            'php_unit_attributes' => [
+                'fully_qualified_strict_types',
+                'phpdoc_separation',
+                'phpdoc_trim',
+                'phpdoc_trim_consecutive_blank_line_separation',
             ],
             'php_unit_construct' => [
                 'php_unit_dedicate_assert',
@@ -729,8 +779,15 @@ final class FixerFactoryTest extends TestCase
                 'phpdoc_align',
                 'phpdoc_order',
             ],
+            'phpdoc_array_type' => [
+                'phpdoc_list_type',
+                'phpdoc_types_order',
+            ],
             'phpdoc_line_span' => [
                 'no_superfluous_phpdoc_tags',
+            ],
+            'phpdoc_list_type' => [
+                'phpdoc_types_order',
             ],
             'phpdoc_no_access' => [
                 'no_empty_phpdoc',
@@ -759,6 +816,11 @@ final class FixerFactoryTest extends TestCase
             'phpdoc_order' => [
                 'phpdoc_separation',
                 'phpdoc_trim',
+            ],
+            'phpdoc_readonly_class_comment_to_keyword' => [
+                'no_empty_phpdoc',
+                'no_extra_blank_lines',
+                'phpdoc_align',
             ],
             'phpdoc_return_self_reference' => [
                 'no_superfluous_phpdoc_tags',
@@ -872,6 +934,10 @@ final class FixerFactoryTest extends TestCase
             'strict_param' => [
                 'method_argument_space',
                 'native_function_invocation',
+            ],
+            'string_implicit_backslashes' => [
+                'heredoc_to_nowdoc',
+                'single_quote',
             ],
             'string_length_to_empty' => [
                 'no_extra_blank_lines',

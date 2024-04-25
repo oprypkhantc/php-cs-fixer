@@ -48,13 +48,13 @@ final class CiIntegrationTest extends AbstractSmokeTestCase
         try {
             CommandExecutor::create('composer --version', __DIR__)->getResult();
         } catch (\RuntimeException $e) {
-            self::markTestSkippedOrFail('Missing `composer` env script. Details:'."\n".$e->getMessage());
+            self::fail('Missing `composer` env script. Details:'."\n".$e->getMessage());
         }
 
         try {
             CommandExecutor::create('composer check', __DIR__.'/../..')->getResult();
         } catch (\RuntimeException $e) {
-            self::markTestSkippedOrFail('Composer check failed. Details:'."\n".$e->getMessage());
+            self::fail('Composer check failed. Details:'."\n".$e->getMessage());
         }
 
         try {
@@ -67,7 +67,7 @@ final class CiIntegrationTest extends AbstractSmokeTestCase
                 'git commit -m "init" -q',
             ]);
         } catch (\RuntimeException $e) {
-            self::markTestSkippedOrFail($e->getMessage());
+            self::fail($e->getMessage());
         }
     }
 
@@ -91,9 +91,9 @@ final class CiIntegrationTest extends AbstractSmokeTestCase
     }
 
     /**
-     * @param string[] $caseCommands
-     * @param string[] $expectedResult1Lines
-     * @param string[] $expectedResult2Lines
+     * @param list<string> $caseCommands
+     * @param list<string> $expectedResult1Lines
+     * @param list<string> $expectedResult2Lines
      *
      * @dataProvider provideIntegrationCases
      */
@@ -159,7 +159,7 @@ Ignoring environment requirements because `PHP_CS_FIXER_IGNORE_ENV` is set. Exec
         $optionalXdebugWarning = 'You are running PHP CS Fixer with xdebug enabled. This has a major impact on runtime performance.
 ';
 
-        $optionalWarningsHelp = 'If you need help while solving warnings, ask at https://gitter.im/PHP-CS-Fixer, we will help you!
+        $optionalWarningsHelp = 'If you need help while solving warnings, ask at https://github.com/PHP-CS-Fixer/PHP-CS-Fixer/discussions/, we will help you!
 
 ';
 
@@ -169,8 +169,8 @@ Ignoring environment requirements because `PHP_CS_FIXER_IGNORE_ENV` is set. Exec
 
         /** @phpstan-ignore-next-line to avoid `Ternary operator condition is always true|false.` */
         $aboutSubpattern = Application::VERSION_CODENAME
-            ? 'PHP CS Fixer '.preg_quote(Application::VERSION, '/').' '.preg_quote(Application::VERSION_CODENAME, '/')." by Fabien Potencier and Dariusz Ruminski.\nPHP runtime: ".PHP_VERSION
-            : 'PHP CS Fixer '.preg_quote(Application::VERSION, '/')." by Fabien Potencier and Dariusz Ruminski.\nPHP runtime: ".PHP_VERSION;
+            ? 'PHP CS Fixer '.preg_quote(Application::VERSION, '/').' '.preg_quote(Application::VERSION_CODENAME, '/')." by Fabien Potencier, Dariusz Ruminski and contributors.\nPHP runtime: ".PHP_VERSION
+            : 'PHP CS Fixer '.preg_quote(Application::VERSION, '/')." by Fabien Potencier, Dariusz Ruminski and contributors.\nPHP runtime: ".PHP_VERSION;
 
         $pattern = sprintf(
             '/^(?:%s)?(?:%s)?(?:%s)?(?:%s)?%s\n%s\n([\.S]{%d})%s\n%s$/',

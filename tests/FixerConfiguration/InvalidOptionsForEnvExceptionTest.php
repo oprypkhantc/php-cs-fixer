@@ -26,7 +26,9 @@ final class InvalidOptionsForEnvExceptionTest extends TestCase
 {
     public function testInvalidOptionsForEnvException(): void
     {
-        $exception = new InvalidOptionsForEnvException();
-        self::assertInstanceOf(\Symfony\Component\OptionsResolver\Exception\InvalidOptionsException::class, $exception);
+        $exception = new InvalidOptionsForEnvException('foo', 123);
+
+        self::assertSame('foo', $exception->getMessage());
+        self::assertSame(123, $exception->getCode());
     }
 }

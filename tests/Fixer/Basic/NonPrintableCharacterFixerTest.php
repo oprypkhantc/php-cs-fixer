@@ -26,34 +26,25 @@ use PhpCsFixer\Tests\Test\AbstractFixerTestCase;
 final class NonPrintableCharacterFixerTest extends AbstractFixerTestCase
 {
     /**
+     * @param array<string, mixed> $configuration
+     *
      * @dataProvider provideFixCases
      */
-    public function testFix(string $expected, ?string $input = null): void
+    public function testFix(string $expected, ?string $input = null, array $configuration = []): void
     {
-        $this->fixer->configure([
-            'use_escape_sequences_in_strings' => false,
-        ]);
-
+        $this->fixer->configure($configuration);
         $this->doTest($expected, $input);
     }
 
     /**
-     * @dataProvider provideFixCases
+     * @return iterable<array{string, null|string, array{use_escape_sequences_in_strings: bool}}>
      */
-    public function testFixWithoutEscapeSequences(string $expected, ?string $input = null): void
-    {
-        $this->fixer->configure([
-            'use_escape_sequences_in_strings' => false,
-        ]);
-
-        $this->doTest($expected, $input);
-    }
-
     public static function provideFixCases(): iterable
     {
         yield [
             '<?php echo "Hello World !";',
             '<?php echo "'.pack('H*', 'e2808b').'Hello'.pack('H*', 'e28087').'World'.pack('H*', 'c2a0').'!";',
+            ['use_escape_sequences_in_strings' => false],
         ];
 
         yield [
@@ -66,6 +57,7 @@ final class NonPrintableCharacterFixerTest extends AbstractFixerTestCase
                 pack('H*', 'e2808b').
                 pack('H*', 'e2808b').
             'Hello World !";',
+            ['use_escape_sequences_in_strings' => false],
         ];
 
         yield [
@@ -75,6 +67,7 @@ echo "Hello World !";',
             '<?php
 // ec'.pack('H*', 'e2808b').'ho
 echo "Hello'.pack('H*', 'e280af').'World'.pack('H*', 'c2a0').'!";',
+            ['use_escape_sequences_in_strings' => false],
         ];
 
         yield [
@@ -96,54 +89,51 @@ echo "Hello'.pack('H*', 'e280af').'World'.pack('H*', 'c2a0').'!";',
                 {
                     echo $p;
                 }',
+            ['use_escape_sequences_in_strings' => false],
         ];
 
         yield [
             '<?php echo "$a[0] ${a}";',
             '<?php echo "$a'.pack('H*', 'e2808b').'[0]'.pack('H*', 'e2808b').' ${a'.pack('H*', 'e2808b').'}";',
+            ['use_escape_sequences_in_strings' => false],
         ];
 
         yield [
             '<?php echo \'12345\';?>abc<?php ?>',
             '<?php echo \'123'.pack('H*', 'e2808b').'45\';?>a'.pack('H*', 'e2808b').'bc<?php ?>',
+            ['use_escape_sequences_in_strings' => false],
         ];
 
         yield [
             '<?php echo "${foo'.pack('H*', 'c2a0').'bar} is great!";',
+            null,
+            ['use_escape_sequences_in_strings' => false],
         ];
 
         yield [
             '<?php echo $foo'.pack('H*', 'c2a0').'bar;',
+            null,
+            ['use_escape_sequences_in_strings' => false],
         ];
 
         yield [
             '<?php /* foo *'.pack('H*', 'e2808b').'/ bar */',
+            null,
+            ['use_escape_sequences_in_strings' => false],
         ];
 
         yield [
             '<?php /** foo *'.pack('H*', 'e2808b').'/ bar */',
+            null,
+            ['use_escape_sequences_in_strings' => false],
         ];
 
         yield [
             '<?php echo b"Hello World !";',
             '<?php echo b"'.pack('H*', 'e2808b').'Hello'.pack('H*', 'e28087').'World'.pack('H*', 'c2a0').'!";',
+            ['use_escape_sequences_in_strings' => false],
         ];
-    }
 
-    /**
-     * @dataProvider provideFixWithEscapeSequencesInStringsCases
-     */
-    public function testFixWithEscapeSequencesInStrings(string $expected, ?string $input = null): void
-    {
-        $this->fixer->configure([
-            'use_escape_sequences_in_strings' => true,
-        ]);
-
-        $this->doTest($expected, $input);
-    }
-
-    public static function provideFixWithEscapeSequencesInStringsCases(): iterable
-    {
         yield [
             '<?php
 
@@ -163,25 +153,31 @@ echo "Hello'.pack('H*', 'e280af').'World'.pack('H*', 'c2a0').'!";',
                 {
                     echo $p;
                 }',
+            ['use_escape_sequences_in_strings' => true],
         ];
 
         yield [
             '<?php echo \'FooBar\\\\\';',
+            null,
+            ['use_escape_sequences_in_strings' => true],
         ];
 
         yield [
             '<?php echo "Foo\u{200b}Bar";',
             '<?php echo "Foo'.pack('H*', 'e2808b').'Bar";',
+            ['use_escape_sequences_in_strings' => true],
         ];
 
         yield [
             '<?php echo "Foo\u{200b}Bar";',
             '<?php echo \'Foo'.pack('H*', 'e2808b').'Bar\';',
+            ['use_escape_sequences_in_strings' => true],
         ];
 
         yield [
             '<?php echo "Foo\u{200b} Bar \\\\n \\\\ \$variableToEscape";',
             '<?php echo \'Foo'.pack('H*', 'e2808b').' Bar \n \ $variableToEscape\';',
+            ['use_escape_sequences_in_strings' => true],
         ];
 
         yield [
@@ -189,6 +185,8 @@ echo "Hello'.pack('H*', 'e280af').'World'.pack('H*', 'c2a0').'!";',
 FooBar\
 TXT;
 ',
+            null,
+            ['use_escape_sequences_in_strings' => true],
         ];
 
         yield [
@@ -200,6 +198,7 @@ TXT;
 Foo'.pack('H*', 'e2808b').'Bar
 TXT;
 ',
+            ['use_escape_sequences_in_strings' => true],
         ];
 
         yield [
@@ -211,6 +210,7 @@ TXT;
 Foo'.pack('H*', 'e2808b').'Bar
 TXT;
 ',
+            ['use_escape_sequences_in_strings' => true],
         ];
 
         yield [
@@ -222,17 +222,19 @@ TXT;
 Foo'.pack('H*', 'e2808b').' Bar \n \ $variableToEscape
 TXT;
 ',
+            ['use_escape_sequences_in_strings' => true],
         ];
 
         yield [
             '<?php echo \'。\';',
+            null,
+            ['use_escape_sequences_in_strings' => true],
         ];
 
         yield [
             <<<'EXPECTED'
                 <?php echo "Double \" quote \u{200b} inside";
-                EXPECTED
-            ,
+                EXPECTED,
             sprintf(
                 <<<'INPUT'
                     <?php echo 'Double " quote %s inside';
@@ -240,13 +242,13 @@ TXT;
                 ,
                 pack('H*', 'e2808b')
             ),
+            ['use_escape_sequences_in_strings' => true],
         ];
 
         yield [
             <<<'EXPECTED'
                 <?php echo "Single ' quote \u{200b} inside";
-                EXPECTED
-            ,
+                EXPECTED,
             sprintf(
                 <<<'INPUT'
                     <?php echo 'Single \' quote %s inside';
@@ -254,6 +256,7 @@ TXT;
                 ,
                 pack('H*', 'e2808b')
             ),
+            ['use_escape_sequences_in_strings' => true],
         ];
 
         yield [
@@ -262,8 +265,7 @@ TXT;
                     Quotes ' and " to be handled \u{200b} properly \\' and \\"
                 STRING
                 ;
-                EXPECTED
-            ,
+                EXPECTED,
             sprintf(
                 <<<'INPUT'
                     <?php echo <<<'STRING'
@@ -274,13 +276,13 @@ TXT;
                 ,
                 pack('H*', 'e2808b')
             ),
+            ['use_escape_sequences_in_strings' => true],
         ];
 
         yield [
             <<<'EXPECTED'
                 <?php echo "\\\u{200b}\"";
-                EXPECTED
-            ,
+                EXPECTED,
             sprintf(
                 <<<'INPUT'
                     <?php echo '\\%s"';
@@ -288,13 +290,13 @@ TXT;
                 ,
                 pack('H*', 'e2808b')
             ),
+            ['use_escape_sequences_in_strings' => true],
         ];
 
         yield [
             <<<'EXPECTED'
                 <?php echo "\\\u{200b}'";
-                EXPECTED
-            ,
+                EXPECTED,
             sprintf(
                 <<<'INPUT'
                     <?php echo '\\%s\'';
@@ -302,13 +304,13 @@ TXT;
                 ,
                 pack('H*', 'e2808b')
             ),
+            ['use_escape_sequences_in_strings' => true],
         ];
 
         yield [
             <<<'EXPECTED'
                 <?php echo "Backslash 1 \\ \u{200b}";
-                EXPECTED
-            ,
+                EXPECTED,
             sprintf(
                 <<<'INPUT'
                     <?php echo 'Backslash 1 \ %s';
@@ -316,13 +318,13 @@ TXT;
                 ,
                 pack('H*', 'e2808b')
             ),
+            ['use_escape_sequences_in_strings' => true],
         ];
 
         yield [
             <<<'EXPECTED'
                 <?php echo "Backslash 2 \\ \u{200b}";
-                EXPECTED
-            ,
+                EXPECTED,
             sprintf(
                 <<<'INPUT'
                     <?php echo 'Backslash 2 \\ %s';
@@ -330,13 +332,13 @@ TXT;
                 ,
                 pack('H*', 'e2808b')
             ),
+            ['use_escape_sequences_in_strings' => true],
         ];
 
         yield [
             <<<'EXPECTED'
                 <?php echo "Backslash 3 \\\\ \u{200b}";
-                EXPECTED
-            ,
+                EXPECTED,
             sprintf(
                 <<<'INPUT'
                     <?php echo 'Backslash 3 \\\ %s';
@@ -344,13 +346,13 @@ TXT;
                 ,
                 pack('H*', 'e2808b')
             ),
+            ['use_escape_sequences_in_strings' => true],
         ];
 
         yield [
             <<<'EXPECTED'
                 <?php echo "Backslash 4 \\\\ \u{200b}";
-                EXPECTED
-            ,
+                EXPECTED,
             sprintf(
                 <<<'INPUT'
                     <?php echo 'Backslash 4 \\\\ %s';
@@ -358,11 +360,13 @@ TXT;
                 ,
                 pack('H*', 'e2808b')
             ),
+            ['use_escape_sequences_in_strings' => true],
         ];
 
         yield [
             "<?php \"String in single quotes, having non-breaking space: \\u{a0}, linebreak: \n, and single quote inside: ' is a dangerous mix.\";",
             "<?php 'String in single quotes, having non-breaking space: ".pack('H*', 'c2a0').", linebreak: \n, and single quote inside: \\' is a dangerous mix.';",
+            ['use_escape_sequences_in_strings' => true],
         ];
     }
 }

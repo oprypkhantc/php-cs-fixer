@@ -121,12 +121,6 @@ final class NoUnsetOnPropertyFixerTest extends AbstractFixerTestCase
             '<?php unset($this->property[array_search(\Types::TYPE_RANDOM, $this->property)]);',
         ];
 
-        if (\PHP_VERSION_ID < 8_00_00) {
-            yield 'It does not replace unsets on arrays with special notation' => [
-                '<?php unset($bar->foo{0});',
-            ];
-        }
-
         yield 'It does not break complex expressions' => [
             '<?php
                 unset(a()[b()["a"]]);
@@ -231,12 +225,6 @@ final class NoUnsetOnPropertyFixerTest extends AbstractFixerTestCase
             '<?php $foo->bar = null  ;',
             '<?php unset($foo->bar , );',
         ];
-
-        if (\PHP_VERSION_ID < 8_00_00) {
-            yield 'It does not replace unsets on arrays with special notation 1' => [
-                '<?php unset($bar->foo{0},);',
-            ];
-        }
     }
 
     /**
@@ -244,13 +232,24 @@ final class NoUnsetOnPropertyFixerTest extends AbstractFixerTestCase
      *
      * @requires PHP <8.0
      */
-    public function testFixPre80(string $expected, string $input = null): void
+    public function testFixPre80(string $expected, ?string $input = null): void
     {
         $this->doTest($expected, $input);
     }
 
+    /**
+     * @return iterable<array{string}>
+     */
     public static function provideFixPre80Cases(): iterable
     {
+        yield 'It does not replace unsets on arrays with special notation' => [
+            '<?php unset($bar->foo{0});',
+        ];
+
+        yield 'It does not replace unsets on arrays with special notation 1' => [
+            '<?php unset($bar->foo{0},);',
+        ];
+
         yield 'It does not break curly access expressions' => [
             '<?php unset(a(){"a"});',
         ];

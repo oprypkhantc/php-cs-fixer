@@ -26,10 +26,13 @@ use PhpCsFixer\Tests\Test\AbstractFixerTestCase;
 final class SingleQuoteFixerTest extends AbstractFixerTestCase
 {
     /**
+     * @param array<string, mixed> $configuration
+     *
      * @dataProvider provideFixCases
      */
-    public function testFix(string $expected, ?string $input = null): void
+    public function testFix(string $expected, ?string $input = null, array $configuration = []): void
     {
+        $this->fixer->configure($configuration);
         $this->doTest($expected, $input);
     }
 
@@ -90,8 +93,7 @@ final class SingleQuoteFixerTest extends AbstractFixerTestCase
         yield [
             <<<'EOF'
                 <?php $a = '\\foo\\bar\\\\';
-                EOF
-            ,
+                EOF,
             <<<'EOF'
                 <?php $a = "\\foo\\bar\\\\";
                 EOF
@@ -142,29 +144,16 @@ final class SingleQuoteFixerTest extends AbstractFixerTestCase
 
         yield ['<?php $a = B"foo\n bar";'];
 
-        yield [<<<'EOF'
-            <?php $a = "\\\n";
-            EOF
+        yield [
+            <<<'EOF'
+                <?php $a = "\\\n";
+                EOF
         ];
-    }
 
-    /**
-     * @dataProvider provideSingleQuoteFixCases
-     */
-    public function testSingleQuoteFix(string $expected, ?string $input = null): void
-    {
-        $this->fixer->configure([
-            'strings_containing_single_quote_chars' => true,
-        ]);
-
-        $this->doTest($expected, $input);
-    }
-
-    public static function provideSingleQuoteFixCases(): iterable
-    {
         yield [
             '<?php $a = \'foo \\\'bar\\\'\';',
             '<?php $a = "foo \'bar\'";',
+            ['strings_containing_single_quote_chars' => true],
         ];
 
         yield [
@@ -172,22 +161,21 @@ final class SingleQuoteFixerTest extends AbstractFixerTestCase
                 <?php
                 // none
                 $a = 'start \' end';
-                // one escaped baskslash
+                // one escaped backslash
                 $b = 'start \\\' end';
-                // two escaped baskslash
+                // two escaped backslash
                 $c = 'start \\\\\' end';
-                EOT
-            ,
+                EOT,
             <<<'EOT'
                 <?php
                 // none
                 $a = "start ' end";
-                // one escaped baskslash
+                // one escaped backslash
                 $b = "start \\' end";
-                // two escaped baskslash
+                // two escaped backslash
                 $c = "start \\\\' end";
-                EOT
-            ,
+                EOT,
+            ['strings_containing_single_quote_chars' => true],
         ];
 
         yield [
@@ -195,10 +183,11 @@ final class SingleQuoteFixerTest extends AbstractFixerTestCase
                 <?php
                 // one unescaped backslash
                 $a = "start \' end";
-                // one escaped + one unescaped baskslash
+                // one escaped + one unescaped backslash
                 $b = "start \\\' end";
-                EOT
-            ,
+                EOT,
+            null,
+            ['strings_containing_single_quote_chars' => true],
         ];
     }
 }

@@ -14,6 +14,7 @@ declare(strict_types=1);
 
 namespace PhpCsFixer\Tests\Fixer\Alias;
 
+use PhpCsFixer\Fixer\Alias\NoAliasFunctionsFixer;
 use PhpCsFixer\Tests\Test\AbstractFixerTestCase;
 
 /**
@@ -27,10 +28,13 @@ use PhpCsFixer\Tests\Test\AbstractFixerTestCase;
 final class NoAliasFunctionsFixerTest extends AbstractFixerTestCase
 {
     /**
+     * @param array<string, list<string>> $configuration
+     *
      * @dataProvider provideFixCases
      */
-    public function testFix(string $expected, ?string $input = null): void
+    public function testFix(string $expected, ?string $input = null, array $configuration = []): void
     {
+        $this->fixer->configure($configuration);
         $this->doTest($expected, $input);
     }
 
@@ -98,21 +102,7 @@ abstract class A
     }
 }',
         ];
-    }
 
-    /**
-     * @param array<string, string[]> $configuration
-     *
-     * @dataProvider provideFixWithConfigurationCases
-     */
-    public function testFixWithConfiguration(string $expected, ?string $input, array $configuration): void
-    {
-        $this->fixer->configure($configuration);
-        $this->doTest($expected, $input);
-    }
-
-    public static function provideFixWithConfigurationCases(): iterable
-    {
         yield '@internal' => [
             '<?php
                 $a = rtrim($b);
@@ -255,9 +245,9 @@ abstract class A
 
     private static function provideAllCases(): iterable
     {
-        $reflectionConstant = new \ReflectionClassConstant(\PhpCsFixer\Fixer\Alias\NoAliasFunctionsFixer::class, 'SETS');
+        $reflectionConstant = new \ReflectionClassConstant(NoAliasFunctionsFixer::class, 'SETS');
 
-        /** @var array<string, string[]> $allAliases */
+        /** @var array<string, array<string, string>> $allAliases */
         $allAliases = $reflectionConstant->getValue();
 
         $sets = $allAliases;

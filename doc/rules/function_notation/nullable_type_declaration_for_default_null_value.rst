@@ -16,6 +16,8 @@ Configuration
 ``use_nullable_type_declaration``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+.. warning:: This option is deprecated and will be removed in the next major version. Behaviour will follow default one.
+
 Whether to add or remove ``?`` or ``|null`` to parameters with a default
 ``null`` value.
 
@@ -113,10 +115,16 @@ With configuration: ``['use_nullable_type_declaration' => false]``.
 Rule sets
 ---------
 
-The rule is part of the following rule set:
+The rule is part of the following rule sets:
 
-- `@Symfony <./../../ruleSets/Symfony.rst>`_ with config:
+- `@PHP84Migration <./../../ruleSets/PHP84Migration.rst>`_
+- `@PhpCsFixer <./../../ruleSets/PhpCsFixer.rst>`_
+- `@Symfony <./../../ruleSets/Symfony.rst>`_
 
-  ``['use_nullable_type_declaration' => false]``
+References
+----------
 
+- Fixer class: `PhpCsFixer\\Fixer\\FunctionNotation\\NullableTypeDeclarationForDefaultNullValueFixer <./../../../src/Fixer/FunctionNotation/NullableTypeDeclarationForDefaultNullValueFixer.php>`_
+- Test class: `PhpCsFixer\\Tests\\Fixer\\FunctionNotation\\NullableTypeDeclarationForDefaultNullValueFixerTest <./../../../tests/Fixer/FunctionNotation/NullableTypeDeclarationForDefaultNullValueFixerTest.php>`_
 
+The test class defines officially supported behaviour. Each test case is a part of our backward compatibility promise.

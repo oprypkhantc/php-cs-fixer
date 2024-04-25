@@ -103,6 +103,18 @@ Rule sets
 
 The rule is part of the following rule sets:
 
+- `@PER <./../../ruleSets/PER.rst>`_ with config:
+
+  ``['after_heredoc' => true, 'elements' => ['arguments', 'arrays', 'match', 'parameters']]``
+
+- `@PER-CS <./../../ruleSets/PER-CS.rst>`_ with config:
+
+  ``['after_heredoc' => true, 'elements' => ['arguments', 'arrays', 'match', 'parameters']]``
+
+- `@PER-CS2.0 <./../../ruleSets/PER-CS2.0.rst>`_ with config:
+
+  ``['after_heredoc' => true, 'elements' => ['arguments', 'arrays', 'match', 'parameters']]``
+
 - `@PHP73Migration <./../../ruleSets/PHP73Migration.rst>`_ with config:
 
   ``['after_heredoc' => true]``
@@ -123,6 +135,21 @@ The rule is part of the following rule sets:
 
   ``['after_heredoc' => true]``
 
+- `@PHP83Migration <./../../ruleSets/PHP83Migration.rst>`_ with config:
+
+  ``['after_heredoc' => true]``
+
+- `@PHP84Migration <./../../ruleSets/PHP84Migration.rst>`_ with config:
+
+  ``['after_heredoc' => true]``
+
 - `@PhpCsFixer <./../../ruleSets/PhpCsFixer.rst>`_
 - `@Symfony <./../../ruleSets/Symfony.rst>`_
 
+References
+----------
+
+- Fixer class: `PhpCsFixer\\Fixer\\ControlStructure\\TrailingCommaInMultilineFixer <./../../../src/Fixer/ControlStructure/TrailingCommaInMultilineFixer.php>`_
+- Test class: `PhpCsFixer\\Tests\\Fixer\\ControlStructure\\TrailingCommaInMultilineFixerTest <./../../../tests/Fixer/ControlStructure/TrailingCommaInMultilineFixerTest.php>`_
+
+The test class defines officially supported behaviour. Each test case is a part of our backward compatibility promise.

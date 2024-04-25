@@ -515,7 +515,7 @@ $a = $ae?? $b;
             ['operators' => ['=' => BinaryOperatorSpacesFixer::ALIGN_SINGLE_SPACE, '??' => BinaryOperatorSpacesFixer::ALIGN_SINGLE_SPACE_MINIMAL]],
         ];
 
-        yield 'align array destruction' => [
+        yield 'align array destructuring' => [
             '<?php
                     $c                 = [$d] = $e[1];
                     function A(){}[$a] = $a[$c];
@@ -529,7 +529,7 @@ $a = $ae?? $b;
             ['operators' => ['=' => BinaryOperatorSpacesFixer::ALIGN]],
         ];
 
-        yield 'align array destruction with assignments' => [
+        yield 'align array destructuring with assignments' => [
             '<?php
                     $d = [
                         "a" => $a,
@@ -793,6 +793,14 @@ $b;
         ];
 
         yield ['<a href="test-<?=$path?>-<?=$id?>.html">Test</a>'];
+
+        yield 'reference in functions declarations' => [
+            '<?php
+                function a(string &$x) { return $x + 1; };
+                $b = function (string &$x) { return $x + 1; };
+                $c = fn (string &$x) => $x + 1;
+            ',
+        ];
     }
 
     /**

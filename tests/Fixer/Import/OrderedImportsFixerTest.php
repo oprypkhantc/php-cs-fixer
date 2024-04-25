@@ -669,8 +669,7 @@ B#
                         return function () use ($bar, $foo) {};
                     }
                 }
-                EOF
-            ,
+                EOF,
             <<<'EOF'
                 The normal
                 use of this fixer
@@ -707,8 +706,7 @@ B#
                         return function () use ($bar, $foo) {};
                     }
                 }
-                EOF
-            ,
+                EOF,
         ];
 
         yield [
@@ -1136,6 +1134,16 @@ use function some\a\{fn_a, fn_b, fn_c,};
                 'sort_algorithm' => OrderedImportsFixer::SORT_NONE,
                 'imports_order' => [OrderedImportsFixer::IMPORT_TYPE_CLASS, OrderedImportsFixer::IMPORT_TYPE_CONST, OrderedImportsFixer::IMPORT_TYPE_FUNCTION],
             ],
+        ];
+
+        yield [
+            '<?php use const CONST_A, CONST_B, CONST_C;',
+            '<?php use const CONST_C, CONST_B, CONST_A;',
+        ];
+
+        yield [
+            '<?php use function Foo\A, Foo\B, Foo\C;',
+            '<?php use function Foo\B, Foo\C, Foo\A;',
         ];
     }
 
@@ -1884,8 +1892,7 @@ use function some\a\{fn_a, fn_b, fn_c,};
                         return function () use ($bar, $foo) {};
                     }
                 }
-                EOF
-            ,
+                EOF,
 
             <<<'EOF'
                 The normal
@@ -1925,8 +1932,7 @@ use function some\a\{fn_a, fn_b, fn_c,};
                         return function () use ($bar, $foo) {};
                     }
                 }
-                EOF
-            ,
+                EOF,
         ];
 
         yield [
@@ -2032,9 +2038,9 @@ use function some\f\{fn_c, fn_d, fn_e};
     /**
      * @dataProvider provideFixTypesOrderAndAlphabetCases
      *
-     * @param string[] $importOrder
+     * @param list<string> $importOrder
      */
-    public function testFixTypesOrderAndAlphabet(string $expected, ?string $input = null, array $importOrder = null): void
+    public function testFixTypesOrderAndAlphabet(string $expected, ?string $input = null, ?array $importOrder = null): void
     {
         $this->fixer->configure([
             'sort_algorithm' => OrderedImportsFixer::SORT_ALPHA,
@@ -2098,9 +2104,9 @@ use function some\a\{fn_a, fn_b};
     /**
      * @dataProvider provideFixTypesOrderAndNoneCases
      *
-     * @param null|string[] $importOrder
+     * @param null|list<string> $importOrder
      */
-    public function testFixTypesOrderAndNone(string $expected, ?string $input = null, array $importOrder = null): void
+    public function testFixTypesOrderAndNone(string $expected, ?string $input = null, ?array $importOrder = null): void
     {
         $this->fixer->configure([
             'sort_algorithm' => OrderedImportsFixer::SORT_NONE,

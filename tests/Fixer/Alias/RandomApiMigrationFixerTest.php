@@ -27,20 +27,30 @@ use PhpCsFixer\Tests\Test\AbstractFixerTestCase;
  */
 final class RandomApiMigrationFixerTest extends AbstractFixerTestCase
 {
-    public function testConfigureCheckSearchFunction(): void
+    /**
+     * @param array<string, mixed> $configuration
+     *
+     * @dataProvider provideInvalidConfigurationCases
+     */
+    public function testInvalidConfiguration(string $message, array $configuration): void
     {
         $this->expectException(InvalidFixerConfigurationException::class);
-        $this->expectExceptionMessageMatches('#^\[random_api_migration\] Invalid configuration: Function "is_null" is not handled by the fixer\.$#');
+        $this->expectExceptionMessage($message);
 
-        $this->fixer->configure(['replacements' => ['is_null' => 'random_int']]);
+        $this->fixer->configure($configuration);
     }
 
-    public function testConfigureCheckReplacementType(): void
+    public static function provideInvalidConfigurationCases(): iterable
     {
-        $this->expectException(InvalidFixerConfigurationException::class);
-        $this->expectExceptionMessageMatches('#^\[random_api_migration\] Invalid configuration: Replacement for function "rand" must be a string, "null" given\.$#');
+        yield 'not supported function' => [
+            '[random_api_migration] Invalid configuration: Function "is_null" is not handled by the fixer.',
+            ['replacements' => ['is_null' => 'random_int']],
+        ];
 
-        $this->fixer->configure(['replacements' => ['rand' => null]]);
+        yield 'wrong replacement' => [
+            '[random_api_migration] Invalid configuration: Replacement for function "rand" must be a string, "null" given.',
+            ['replacements' => ['rand' => null]],
+        ];
     }
 
     public function testConfigure(): void
@@ -70,7 +80,7 @@ final class RandomApiMigrationFixerTest extends AbstractFixerTestCase
     }
 
     /**
-     * @return array[]
+     * @return iterable<array{0: string, 1?: ?string, 2?: array<string, mixed>}>
      */
     public static function provideFixCases(): iterable
     {
@@ -221,7 +231,7 @@ class srand extends SrandClass{
      *
      * @requires PHP 8.1
      */
-    public function testFix81(string $expected, string $input = null): void
+    public function testFix81(string $expected, ?string $input = null): void
     {
         $this->doTest($expected, $input);
     }

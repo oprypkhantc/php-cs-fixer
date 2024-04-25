@@ -28,13 +28,11 @@ final class FileLintingIteratorTest extends TestCase
 {
     public function testFileLintingIteratorEmpty(): void
     {
-        $fileLintingIteratorProphecy = $this->prophesize(LinterInterface::class);
-
         $iterator = new \ArrayIterator([]);
 
         $fileLintingIterator = new FileLintingIterator(
             $iterator,
-            $fileLintingIteratorProphecy->reveal()
+            $this->createLinterDouble()
         );
 
         self::assertNull($fileLintingIterator->current());
@@ -46,16 +44,19 @@ final class FileLintingIteratorTest extends TestCase
     public function testFileLintingIterator(): void
     {
         $file = new \SplFileInfo(__FILE__);
-        $fileLintingIteratorProphecy = $this->prophesize(LinterInterface::class);
 
-        $lintingResultInterfaceProphecy = $this->prophesize(LintingResultInterface::class)->reveal();
-        $fileLintingIteratorProphecy->lintFile($file)->willReturn($lintingResultInterfaceProphecy);
+        $lintingResult = new class() implements LintingResultInterface {
+            public function check(): void
+            {
+                throw new \LogicException('Not implemented.');
+            }
+        };
 
         $iterator = new \ArrayIterator([$file]);
 
         $fileLintingIterator = new FileLintingIterator(
             $iterator,
-            $fileLintingIteratorProphecy->reveal()
+            $this->createLinterDouble($lintingResult)
         );
 
         // test when not touched current is null
@@ -64,13 +65,13 @@ final class FileLintingIteratorTest extends TestCase
 
         // test iterating
 
-        $this->fileLintingIteratorIterationTest($fileLintingIterator, $file, $lintingResultInterfaceProphecy);
+        $this->fileLintingIteratorIterationTest($fileLintingIterator, $file, $lintingResult);
 
         // rewind and test again
 
         $fileLintingIterator->rewind();
 
-        $this->fileLintingIteratorIterationTest($fileLintingIterator, $file, $lintingResultInterfaceProphecy);
+        $this->fileLintingIteratorIterationTest($fileLintingIterator, $file, $lintingResult);
     }
 
     private function fileLintingIteratorIterationTest(
@@ -91,5 +92,32 @@ final class FileLintingIteratorTest extends TestCase
         $fileLintingIterator->next();
 
         self::assertNull($fileLintingIterator->currentLintingResult());
+    }
+
+    private function createLinterDouble(?LintingResultInterface $lintingResult = null): LinterInterface
+    {
+        return new class($lintingResult) implements LinterInterface {
+            private ?LintingResultInterface $lintingResult;
+
+            public function __construct(?LintingResultInterface $lintingResult)
+            {
+                $this->lintingResult = $lintingResult;
+            }
+
+            public function isAsync(): bool
+            {
+                throw new \LogicException('Not implemented.');
+            }
+
+            public function lintFile(string $path): LintingResultInterface
+            {
+                return $this->lintingResult;
+            }
+
+            public function lintSource(string $source): LintingResultInterface
+            {
+                throw new \LogicException('Not implemented.');
+            }
+        };
     }
 }

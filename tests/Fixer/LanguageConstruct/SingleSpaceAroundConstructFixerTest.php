@@ -219,7 +219,7 @@ abstract class Foo
     /**
      * @dataProvider provideFixWithAsCases
      *
-     * @param array<string, string[]> $config
+     * @param array<string, list<string>> $config
      */
     public function testFixWithAs(string $expected, ?string $input = null, array $config = []): void
     {
@@ -862,6 +862,25 @@ FOO = 9000; }',
         yield [
             '<?php class Foo { const /* foo */FOO = 9000; }',
             '<?php class Foo { const  /* foo */FOO = 9000; }',
+        ];
+
+        yield [
+            '<?php class Foo {
+                const FOO = [
+                    1
+                ];
+                const BAR = [
+                    2,
+                ];
+            }',
+            '<?php class Foo {
+                const    FOO = [
+                    1
+                ];
+                const    BAR = [
+                    2,
+                ];
+            }',
         ];
 
         yield ['<?php class Foo {
@@ -2121,6 +2140,26 @@ Bar();',
         yield [
             '<?php new /* foo */Bar();',
             '<?php new/* foo */Bar();',
+        ];
+
+        yield 'attribute on separate line' => [
+            <<<'EOF'
+                <?php
+                $a = new
+                #[FOO]
+                class() {};
+                EOF,
+        ];
+
+        yield 'phpdoc on separate line' => [
+            <<<'EOF'
+                <?php
+                $a = new
+                /**
+                 @property string $x
+                 */
+                class() {};
+                EOF,
         ];
     }
 

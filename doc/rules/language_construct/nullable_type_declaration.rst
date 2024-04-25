@@ -30,8 +30,8 @@ Example #1
    --- Original
    +++ New
     <?php
-   -function bar(null|int $value, null|\Closure $callable): void {}
-   +function bar(?int $value, ?\Closure $callable): void {}
+   -function bar(null|int $value, null|\Closure $callable): int|null {}
+   +function bar(?int $value, ?\Closure $callable): ?int {}
 
 Example #2
 ~~~~~~~~~~
@@ -66,3 +66,19 @@ With configuration: ``['syntax' => 'question_mark']``.
    +    public ?bool $internal;
    +    public ?\Closure $callback;
     }
+
+Rule sets
+---------
+
+The rule is part of the following rule sets:
+
+- `@PhpCsFixer <./../../ruleSets/PhpCsFixer.rst>`_
+- `@Symfony <./../../ruleSets/Symfony.rst>`_
+
+References
+----------
+
+- Fixer class: `PhpCsFixer\\Fixer\\LanguageConstruct\\NullableTypeDeclarationFixer <./../../../src/Fixer/LanguageConstruct/NullableTypeDeclarationFixer.php>`_
+- Test class: `PhpCsFixer\\Tests\\Fixer\\LanguageConstruct\\NullableTypeDeclarationFixerTest <./../../../tests/Fixer/LanguageConstruct/NullableTypeDeclarationFixerTest.php>`_
+
+The test class defines officially supported behaviour. Each test case is a part of our backward compatibility promise.

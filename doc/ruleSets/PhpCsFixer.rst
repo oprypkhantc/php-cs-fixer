@@ -7,9 +7,8 @@ Rule set as used by the PHP-CS-Fixer development team, highly opinionated.
 Rules
 -----
 
-- `@PER <./PER.rst>`_
+- `@PER-CS <./PER-CS.rst>`_
 - `@Symfony <./Symfony.rst>`_
-- `array_indentation <./../rules/whitespace/array_indentation.rst>`_
 - `blank_line_before_statement <./../rules/whitespace/blank_line_before_statement.rst>`_ with config:
 
   ``['statements' => ['break', 'case', 'continue', 'declare', 'default', 'exit', 'goto', 'include', 'include_once', 'phpdoc', 'require', 'require_once', 'return', 'switch', 'throw', 'try', 'yield', 'yield_from']]``
@@ -17,9 +16,12 @@ Rules
 - `combine_consecutive_issets <./../rules/language_construct/combine_consecutive_issets.rst>`_
 - `combine_consecutive_unsets <./../rules/language_construct/combine_consecutive_unsets.rst>`_
 - `empty_loop_body <./../rules/control_structure/empty_loop_body.rst>`_
-- `escape_implicit_backslashes <./../rules/string_notation/escape_implicit_backslashes.rst>`_
 - `explicit_indirect_variable <./../rules/language_construct/explicit_indirect_variable.rst>`_
 - `explicit_string_variable <./../rules/string_notation/explicit_string_variable.rst>`_
+- `fully_qualified_strict_types <./../rules/import/fully_qualified_strict_types.rst>`_ with config:
+
+  ``['import_symbols' => true]``
+
 - `heredoc_to_nowdoc <./../rules/string_notation/heredoc_to_nowdoc.rst>`_
 - `method_argument_space <./../rules/function_notation/method_argument_space.rst>`_ with config:
 
@@ -46,7 +48,12 @@ Rules
 
 - `no_useless_else <./../rules/control_structure/no_useless_else.rst>`_
 - `no_useless_return <./../rules/return_notation/no_useless_return.rst>`_
+- `no_whitespace_before_comma_in_array <./../rules/array_notation/no_whitespace_before_comma_in_array.rst>`_ with config:
+
+  ``['after_heredoc' => true]``
+
 - `ordered_class_elements <./../rules/class_notation/ordered_class_elements.rst>`_
+- `ordered_types <./../rules/class_notation/ordered_types.rst>`_
 - `php_unit_internal_class <./../rules/php_unit/php_unit_internal_class.rst>`_
 - `php_unit_test_class_requires_covers <./../rules/php_unit/php_unit_test_class_requires_covers.rst>`_
 - `phpdoc_add_missing_param_annotation <./../rules/phpdoc/phpdoc_add_missing_param_annotation.rst>`_
@@ -58,14 +65,17 @@ Rules
 - `return_assignment <./../rules/return_notation/return_assignment.rst>`_
 - `self_static_accessor <./../rules/class_notation/self_static_accessor.rst>`_
 - `single_line_comment_style <./../rules/comment/single_line_comment_style.rst>`_
+- `single_line_empty_body <./../rules/basic/single_line_empty_body.rst>`_
+- `string_implicit_backslashes <./../rules/string_notation/string_implicit_backslashes.rst>`_ with config:
+
+  ``['single_quoted' => 'ignore']``
+
 - `whitespace_after_comma_in_array <./../rules/array_notation/whitespace_after_comma_in_array.rst>`_ with config:
 
   ``['ensure_single_space' => true]``
 
-- `yield_from_array_to_yields <./../rules/array_notation/yield_from_array_to_yields.rst>`_
 
 Disabled rules
 --------------
 
-- `nullable_type_declaration_for_default_null_value <./../rules/function_notation/nullable_type_declaration_for_default_null_value.rst>`_
 - `single_line_throw <./../rules/function_notation/single_line_throw.rst>`_

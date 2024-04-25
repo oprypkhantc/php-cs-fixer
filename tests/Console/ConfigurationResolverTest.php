@@ -14,17 +14,26 @@ declare(strict_types=1);
 
 namespace PhpCsFixer\Tests\Console;
 
+use PhpCsFixer\AbstractFixer;
 use PhpCsFixer\Cache\NullCacheManager;
 use PhpCsFixer\Config;
 use PhpCsFixer\ConfigurationException\InvalidConfigurationException;
 use PhpCsFixer\Console\Command\FixCommand;
 use PhpCsFixer\Console\ConfigurationResolver;
 use PhpCsFixer\Console\Output\Progress\ProgressOutputType;
+use PhpCsFixer\Differ\NullDiffer;
+use PhpCsFixer\Differ\UnifiedDiffer;
 use PhpCsFixer\Finder;
-use PhpCsFixer\Linter\LinterInterface;
-use PhpCsFixer\Tests\Fixtures\DeprecatedFixer;
+use PhpCsFixer\Fixer\ConfigurableFixerInterface;
+use PhpCsFixer\Fixer\DeprecatedFixerInterface;
+use PhpCsFixer\FixerConfiguration\FixerConfigurationResolver;
+use PhpCsFixer\FixerConfiguration\FixerConfigurationResolverInterface;
+use PhpCsFixer\FixerConfiguration\FixerOptionBuilder;
+use PhpCsFixer\FixerDefinition\FixerDefinitionInterface;
 use PhpCsFixer\Tests\TestCase;
-use PhpCsFixer\ToolInfo;
+use PhpCsFixer\Tokenizer\Tokens;
+use PhpCsFixer\ToolInfoInterface;
+use PhpCsFixer\Utils;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -81,7 +90,7 @@ final class ConfigurationResolverTest extends TestCase
             'verbosity' => OutputInterface::VERBOSITY_VERBOSE,
         ], $config);
 
-        self::assertSame('dots', $resolver->getProgressType());
+        self::assertSame('bar', $resolver->getProgressType());
     }
 
     public function testResolveProgressWithNegativeConfigAndNegativeOption(): void
@@ -94,7 +103,7 @@ final class ConfigurationResolverTest extends TestCase
             'verbosity' => OutputInterface::VERBOSITY_NORMAL,
         ], $config);
 
-        self::assertSame('none', $resolver->getProgressType());
+        self::assertSame('bar', $resolver->getProgressType());
     }
 
     /**
@@ -131,9 +140,12 @@ final class ConfigurationResolverTest extends TestCase
         self::assertSame($progressType, $resolver->getProgressType());
     }
 
+    /**
+     * @return iterable<string, array{0: ProgressOutputType::*}>
+     */
     public static function provideProgressTypeCases(): iterable
     {
-        foreach (ProgressOutputType::AVAILABLE as $outputType) {
+        foreach (ProgressOutputType::all() as $outputType) {
             yield $outputType => [$outputType];
         }
     }
@@ -147,7 +159,7 @@ final class ConfigurationResolverTest extends TestCase
         ]);
 
         $this->expectException(InvalidConfigurationException::class);
-        $this->expectExceptionMessage('The progress type "foo" is not defined, supported are "none" and "dots".');
+        $this->expectExceptionMessage('The progress type "foo" is not defined, supported are "bar", "dots" and "none".');
 
         $resolver->getProgressType();
     }
@@ -157,7 +169,6 @@ final class ConfigurationResolverTest extends TestCase
         $resolver = $this->createConfigurationResolver([]);
 
         self::assertNull($resolver->getConfigFile());
-        self::assertInstanceOf(\PhpCsFixer\ConfigInterface::class, $resolver->getConfig());
     }
 
     public function testResolveConfigFileByPathOfFile(): void
@@ -328,7 +339,7 @@ final class ConfigurationResolverTest extends TestCase
     }
 
     /**
-     * @param array<string> $paths
+     * @param list<string> $paths
      *
      * @dataProvider provideRejectInvalidPathCases
      */
@@ -803,6 +814,84 @@ final class ConfigurationResolverTest extends TestCase
         self::assertFalse($resolver->getUsingCache());
     }
 
+    /**
+     * @dataProvider provideResolveUsingCacheForRuntimesCases
+     */
+    public function testResolveUsingCacheForRuntimes(bool $cacheAllowed, bool $installedWithComposer, bool $asPhar, bool $inDocker): void
+    {
+        $config = new Config();
+        $config->setUsingCache(true);
+
+        $resolver = $this->createConfigurationResolver(
+            [],
+            $config,
+            '',
+            new class($installedWithComposer, $asPhar, $inDocker) implements ToolInfoInterface {
+                private bool $installedWithComposer;
+                private bool $asPhar;
+                private bool $inDocker;
+
+                public function __construct(bool $installedWithComposer, bool $asPhar, bool $inDocker)
+                {
+                    $this->installedWithComposer = $installedWithComposer;
+                    $this->asPhar = $asPhar;
+                    $this->inDocker = $inDocker;
+                }
+
+                public function getComposerInstallationDetails(): array
+                {
+                    throw new \BadMethodCallException();
+                }
+
+                public function getComposerVersion(): string
+                {
+                    throw new \BadMethodCallException();
+                }
+
+                public function getVersion(): string
+                {
+                    throw new \BadMethodCallException();
+                }
+
+                public function isInstalledAsPhar(): bool
+                {
+                    return $this->asPhar;
+                }
+
+                public function isInstalledByComposer(): bool
+                {
+                    return $this->installedWithComposer;
+                }
+
+                public function isRunInsideDocker(): bool
+                {
+                    return $this->inDocker;
+                }
+
+                public function getPharDownloadUri(string $version): string
+                {
+                    throw new \BadMethodCallException();
+                }
+            }
+        );
+
+        self::assertSame($cacheAllowed, $resolver->getUsingCache());
+    }
+
+    /**
+     * @return iterable<array{0: bool, 1: bool, 2: bool, 3: bool}>
+     */
+    public static function provideResolveUsingCacheForRuntimesCases(): iterable
+    {
+        yield 'none of the allowed runtimes' => [false, false, false, false];
+
+        yield 'composer installation' => [true, true, false, false];
+
+        yield 'PHAR distribution' => [true, false, true, false];
+
+        yield 'Docker runtime' => [true, false, false, true];
+    }
+
     public function testResolveCacheFileWithoutConfigAndOption(): void
     {
         $config = new Config();
@@ -837,9 +926,7 @@ final class ConfigurationResolverTest extends TestCase
 
         self::assertInstanceOf(NullCacheManager::class, $cacheManager);
 
-        $linter = $resolver->getLinter();
-
-        self::assertInstanceOf(LinterInterface::class, $linter);
+        self::assertFalse($resolver->getLinter()->isAsync());
     }
 
     public function testResolveCacheFileWithOption(): void
@@ -975,7 +1062,7 @@ final class ConfigurationResolverTest extends TestCase
     }
 
     /**
-     * @param string[] $rules
+     * @param list<string> $rules
      *
      * @dataProvider provideResolveRenamedRulesWithUnknownRulesCases
      */
@@ -1047,7 +1134,7 @@ For more info about updating see: https://github.com/PHP-CS-Fixer/PHP-CS-Fixer/b
 
     public function testResolveCommandLineInputOverridesDefault(): void
     {
-        $command = new FixCommand(new ToolInfo());
+        $command = new FixCommand($this->createToolInfoDouble());
         $definition = $command->getDefinition();
         $arguments = $definition->getArguments();
         self::assertCount(1, $arguments, 'Expected one argument, possibly test needs updating.');
@@ -1078,8 +1165,9 @@ For more info about updating see: https://github.com/PHP-CS-Fixer/PHP-CS-Fixer/b
         self::assertSame(['php_unit_construct' => true], $resolver->getRules());
         self::assertFalse($resolver->getUsingCache());
         self::assertNull($resolver->getCacheFile());
-        self::assertInstanceOf(\PhpCsFixer\Differ\UnifiedDiffer::class, $resolver->getDiffer());
+        self::assertInstanceOf(UnifiedDiffer::class, $resolver->getDiffer());
         self::assertSame('json', $resolver->getReporter()->getFormat());
+        self::assertSame('none', $resolver->getProgressType());
     }
 
     /**
@@ -1099,17 +1187,17 @@ For more info about updating see: https://github.com/PHP-CS-Fixer/PHP-CS-Fixer/b
     public static function provideResolveDifferCases(): iterable
     {
         yield [
-            \PhpCsFixer\Differ\NullDiffer::class,
+            NullDiffer::class,
             false,
         ];
 
         yield [
-            \PhpCsFixer\Differ\NullDiffer::class,
+            NullDiffer::class,
             null,
         ];
 
         yield [
-            \PhpCsFixer\Differ\UnifiedDiffer::class,
+            UnifiedDiffer::class,
             true,
         ];
     }
@@ -1125,6 +1213,7 @@ For more info about updating see: https://github.com/PHP-CS-Fixer/PHP-CS-Fixer/b
         self::assertFalse($resolver->getUsingCache());
         self::assertNull($resolver->getCacheFile());
         self::assertSame('xml', $resolver->getReporter()->getFormat());
+        self::assertSame('none', $resolver->getProgressType());
     }
 
     public function testDeprecationOfPassingOtherThanNoOrYes(): void
@@ -1172,7 +1261,7 @@ For more info about updating see: https://github.com/PHP-CS-Fixer/PHP-CS-Fixer/b
     public function testDeprecatedFixerConfigured($ruleConfig): void
     {
         $this->expectDeprecation('Rule "Vendor4/foo" is deprecated. Use "testA" and "testB" instead.');
-        $fixer = new DeprecatedFixer();
+        $fixer = $this->createDeprecatedFixerDouble();
         $config = new Config();
         $config->registerCustomFixers([$fixer]);
         $config->setRules([$fixer->getName() => $ruleConfig]);
@@ -1188,6 +1277,41 @@ For more info about updating see: https://github.com/PHP-CS-Fixer/PHP-CS-Fixer/b
         yield [['foo' => true]];
 
         yield [false];
+    }
+
+    /**
+     * @dataProvider provideDeprecatedRuleSetConfiguredCases
+     *
+     * @group legacy
+     *
+     * @param list<string> $successors
+     */
+    public function testDeprecatedRuleSetConfigured(string $ruleSet, array $successors): void
+    {
+        $this->expectDeprecation(sprintf(
+            'Rule set "%s" is deprecated. %s.',
+            $ruleSet,
+            [] === $successors
+                ? 'No replacement available'
+                : sprintf('Use %s instead', Utils::naturalLanguageJoin($successors))
+        ));
+
+        $config = new Config();
+        $config->setRules([$ruleSet => true]);
+        $config->setRiskyAllowed(true);
+
+        $resolver = $this->createConfigurationResolver([], $config);
+        $resolver->getFixers();
+    }
+
+    /**
+     * @return iterable<array{0: string, 1: list<string>}>
+     */
+    public static function provideDeprecatedRuleSetConfiguredCases(): iterable
+    {
+        yield ['@PER', ['@PER-CS']];
+
+        yield ['@PER:risky', ['@PER-CS:risky']];
     }
 
     public static function provideGetDirectoryCases(): iterable
@@ -1221,7 +1345,7 @@ For more info about updating see: https://github.com/PHP-CS-Fixer/PHP-CS-Fixer/b
             $config->setCacheFile($cacheFile);
         }
 
-        $resolver = new ConfigurationResolver($config, [], $this->normalizePath('/my/path'), new TestToolInfo());
+        $resolver = new ConfigurationResolver($config, [], $this->normalizePath('/my/path'), $this->createToolInfoDouble());
         $directory = $resolver->getDirectory();
 
         self::assertSame($expectedPathRelativeToFile, $directory->getRelativePathTo($file));
@@ -1252,17 +1376,91 @@ For more info about updating see: https://github.com/PHP-CS-Fixer/PHP-CS-Fixer/b
     /**
      * @param array<string, mixed> $options
      */
-    private function createConfigurationResolver(array $options, Config $config = null, string $cwdPath = ''): ConfigurationResolver
-    {
-        if (null === $config) {
-            $config = new Config();
-        }
-
+    private function createConfigurationResolver(
+        array $options,
+        ?Config $config = null,
+        string $cwdPath = '',
+        ?ToolInfoInterface $toolInfo = null
+    ): ConfigurationResolver {
         return new ConfigurationResolver(
-            $config,
+            $config ?? new Config(),
             $options,
             $cwdPath,
-            new TestToolInfo()
+            $toolInfo ?? $this->createToolInfoDouble()
         );
+    }
+
+    private function createDeprecatedFixerDouble(): DeprecatedFixerInterface
+    {
+        return new class() extends AbstractFixer implements DeprecatedFixerInterface, ConfigurableFixerInterface {
+            public function getDefinition(): FixerDefinitionInterface
+            {
+                throw new \LogicException('Not implemented.');
+            }
+
+            public function isCandidate(Tokens $tokens): bool
+            {
+                throw new \LogicException('Not implemented.');
+            }
+
+            public function getSuccessorsNames(): array
+            {
+                return ['testA', 'testB'];
+            }
+
+            public function getName(): string
+            {
+                return 'Vendor4/foo';
+            }
+
+            protected function applyFix(\SplFileInfo $file, Tokens $tokens): void {}
+
+            protected function createConfigurationDefinition(): FixerConfigurationResolverInterface
+            {
+                return new FixerConfigurationResolver([
+                    (new FixerOptionBuilder('foo', 'Foo.'))->getOption(),
+                ]);
+            }
+        };
+    }
+
+    private function createToolInfoDouble(): ToolInfoInterface
+    {
+        return new class() implements ToolInfoInterface {
+            public function getComposerInstallationDetails(): array
+            {
+                throw new \BadMethodCallException();
+            }
+
+            public function getComposerVersion(): string
+            {
+                throw new \BadMethodCallException();
+            }
+
+            public function getVersion(): string
+            {
+                throw new \BadMethodCallException();
+            }
+
+            public function isInstalledAsPhar(): bool
+            {
+                return true;
+            }
+
+            public function isInstalledByComposer(): bool
+            {
+                throw new \BadMethodCallException();
+            }
+
+            public function isRunInsideDocker(): bool
+            {
+                return false;
+            }
+
+            public function getPharDownloadUri(string $version): string
+            {
+                throw new \BadMethodCallException();
+            }
+        };
     }
 }

@@ -23,12 +23,15 @@ use PhpCsFixer\FixerFactory;
 use PhpCsFixer\RuleSet\RuleSet;
 use PhpCsFixer\RuleSet\RuleSetDescriptionInterface;
 use PhpCsFixer\RuleSet\RuleSets;
+use PhpCsFixer\Tests\Test\TestCaseUtils;
 use PhpCsFixer\Tests\TestCase;
 
 /**
  * @author Dariusz Rumiński <dariusz.ruminski@gmail.com>
  *
  * @internal
+ *
+ * @group legacy
  *
  * @covers \PhpCsFixer\RuleSet\RuleSet
  */
@@ -37,7 +40,7 @@ final class RuleSetTest extends TestCase
     /**
      * Options for which order of array elements matters.
      *
-     * @var string[]
+     * @var list<string>
      */
     private const ORDER_MATTERS = [
         'ordered_imports.imports_order',
@@ -45,7 +48,7 @@ final class RuleSetTest extends TestCase
     ];
 
     /**
-     * @param array<string, mixed>|bool $ruleConfig
+     * @param array<string, mixed>|true $ruleConfig
      *
      * @dataProvider provideAllRulesFromSetsCases
      */
@@ -77,17 +80,13 @@ final class RuleSetTest extends TestCase
     }
 
     /**
-     * @param array<string, mixed>|bool $ruleConfig
+     * @param array<string, mixed>|true $ruleConfig
      *
      * @dataProvider provideAllRulesFromSetsCases
      */
     public function testThatDefaultConfigIsNotPassed(string $setName, string $ruleName, $ruleConfig): void
     {
-        $factory = new FixerFactory();
-        $factory->registerBuiltInFixers();
-        $factory->useRuleSet(new RuleSet([$ruleName => true]));
-
-        $fixer = current($factory->getFixers());
+        $fixer = TestCaseUtils::getFixerByName($ruleName);
 
         if (!$fixer instanceof ConfigurableFixerInterface || \is_bool($ruleConfig)) {
             $this->expectNotToPerformAssertions();
@@ -117,11 +116,7 @@ final class RuleSetTest extends TestCase
      */
     public function testThatThereIsNoDeprecatedFixerInRuleSet(string $setName, string $ruleName): void
     {
-        $factory = new FixerFactory();
-        $factory->registerBuiltInFixers();
-        $factory->useRuleSet(new RuleSet([$ruleName => true]));
-
-        $fixer = current($factory->getFixers());
+        $fixer = TestCaseUtils::getFixerByName($ruleName);
 
         self::assertNotInstanceOf(DeprecatedFixerInterface::class, $fixer, sprintf('RuleSet "%s" contains deprecated rule "%s".', $setName, $ruleName));
     }
@@ -216,7 +211,7 @@ final class RuleSetTest extends TestCase
                 'constant_case' => true,
                 'control_structure_braces' => true,
                 'control_structure_continuation_position' => true,
-                'curly_braces_position' => true,
+                'braces_position' => true,
                 'elseif' => true,
                 'encoding' => true,
                 'full_opening_tag' => true,
@@ -224,7 +219,7 @@ final class RuleSetTest extends TestCase
                 'indentation_type' => true,
                 'line_ending' => true,
                 'lowercase_keywords' => true,
-                'method_argument_space' => ['on_multiline' => 'ensure_fully_multiline'],
+                'method_argument_space' => ['attribute_placement' => 'ignore', 'on_multiline' => 'ensure_fully_multiline'],
                 'no_break_comment' => true,
                 'no_closing_tag' => true,
                 'no_multiple_statements_per_line' => true,
@@ -262,14 +257,14 @@ final class RuleSetTest extends TestCase
                 'class_definition' => true,
                 'control_structure_braces' => true,
                 'control_structure_continuation_position' => true,
-                'curly_braces_position' => true,
+                'braces_position' => true,
                 'elseif' => true,
                 'encoding' => true,
                 'function_declaration' => true,
                 'indentation_type' => true,
                 'line_ending' => true,
                 'lowercase_keywords' => true,
-                'method_argument_space' => ['on_multiline' => 'ensure_fully_multiline'],
+                'method_argument_space' => ['attribute_placement' => 'ignore', 'on_multiline' => 'ensure_fully_multiline'],
                 'no_break_comment' => true,
                 'no_closing_tag' => true,
                 'no_multiple_statements_per_line' => true,
@@ -298,6 +293,15 @@ final class RuleSetTest extends TestCase
      */
     public function testRiskyRulesInSet(array $set, bool $safe): void
     {
+        /** @TODO 4.0 Remove this expectations */
+        $expectedDeprecations = [
+            '@PER' => 'Rule set "@PER" is deprecated. Use "@PER-CS" instead.',
+            '@PER:risky' => 'Rule set "@PER:risky" is deprecated. Use "@PER-CS:risky" instead.',
+        ];
+        if (\array_key_exists(array_key_first($set), $expectedDeprecations)) {
+            $this->expectDeprecation($expectedDeprecations[array_key_first($set)]);
+        }
+
         try {
             $fixers = (new FixerFactory())
                 ->registerBuiltInFixers()
@@ -374,6 +378,9 @@ final class RuleSetTest extends TestCase
 
         foreach ($set->getRules() as $ruleName => $ruleConfig) {
             if (str_starts_with($ruleName, '@')) {
+                if (true !== $ruleConfig && false !== $ruleConfig) {
+                    throw new \LogicException('Disallowed configuration for RuleSet.');
+                }
                 $setRules = array_merge($setRules, $this->resolveSet($ruleName, $ruleConfig));
             } else {
                 $rules[$ruleName] = $ruleConfig;
@@ -499,7 +506,7 @@ final class RuleSetTest extends TestCase
     }
 
     /**
-     * @param array<int|string,mixed> $values
+     * @param array<int|string, mixed> $values
      */
     private function allInteger(array $values): bool
     {

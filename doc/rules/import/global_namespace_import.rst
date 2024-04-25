@@ -7,6 +7,15 @@ Imports or fully qualifies global classes/functions/constants.
 Configuration
 -------------
 
+``import_classes``
+~~~~~~~~~~~~~~~~~~
+
+Whether to import, not import or ignore global classes.
+
+Allowed values: ``false``, ``null`` and ``true``
+
+Default value: ``true``
+
 ``import_constants``
 ~~~~~~~~~~~~~~~~~~~~
 
@@ -24,15 +33,6 @@ Whether to import, not import or ignore global functions.
 Allowed values: ``false``, ``null`` and ``true``
 
 Default value: ``null``
-
-``import_classes``
-~~~~~~~~~~~~~~~~~~
-
-Whether to import, not import or ignore global classes.
-
-Allowed values: ``false``, ``null`` and ``true``
-
-Default value: ``true``
 
 Examples
 --------
@@ -121,3 +121,10 @@ The rule is part of the following rule sets:
   ``['import_classes' => false, 'import_constants' => false, 'import_functions' => false]``
 
 
+References
+----------
+
+- Fixer class: `PhpCsFixer\\Fixer\\Import\\GlobalNamespaceImportFixer <./../../../src/Fixer/Import/GlobalNamespaceImportFixer.php>`_
+- Test class: `PhpCsFixer\\Tests\\Fixer\\Import\\GlobalNamespaceImportFixerTest <./../../../tests/Fixer/Import/GlobalNamespaceImportFixerTest.php>`_
+
+The test class defines officially supported behaviour. Each test case is a part of our backward compatibility promise.

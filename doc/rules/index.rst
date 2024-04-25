@@ -66,9 +66,16 @@ Array Notation
 - `whitespace_after_comma_in_array <./array_notation/whitespace_after_comma_in_array.rst>`_
 
   In array declaration, there MUST be a whitespace after each comma.
-- `yield_from_array_to_yields <./array_notation/yield_from_array_to_yields.rst>`_
+- `yield_from_array_to_yields <./array_notation/yield_from_array_to_yields.rst>`_ *(risky)*
 
   Yield from array must be unpacked to series of yields.
+
+Attribute Notation
+------------------
+
+- `attribute_empty_parentheses <./attribute_notation/attribute_empty_parentheses.rst>`_
+
+  PHP attributes declared without arguments must (not) be followed by empty parentheses.
 
 Basic
 -----
@@ -76,7 +83,10 @@ Basic
 - `braces <./basic/braces.rst>`_ *(deprecated)*
 
   The body of each structure MUST be enclosed by braces. Braces should be properly placed. Body of braces should be properly indented.
-- `curly_braces_position <./basic/curly_braces_position.rst>`_
+- `braces_position <./basic/braces_position.rst>`_
+
+  Braces must be placed as configured.
+- `curly_braces_position <./basic/curly_braces_position.rst>`_ *(deprecated)*
 
   Curly braces must be placed as configured.
 - `encoding <./basic/encoding.rst>`_
@@ -91,6 +101,9 @@ Basic
 - `non_printable_character <./basic/non_printable_character.rst>`_ *(risky)*
 
   Remove Zero-width space (ZWSP), Non-breaking space (NBSP) and other invisible unicode symbols.
+- `numeric_literal_separator <./basic/numeric_literal_separator.rst>`_
+
+  Adds separators to numeric literals of any kind.
 - `octal_notation <./basic/octal_notation.rst>`_
 
   Literal octal must be in ``0o`` notation.
@@ -128,9 +141,12 @@ Casing
 - `native_function_casing <./casing/native_function_casing.rst>`_
 
   Function defined by PHP should be called using the correct casing.
-- `native_function_type_declaration_casing <./casing/native_function_type_declaration_casing.rst>`_
+- `native_function_type_declaration_casing <./casing/native_function_type_declaration_casing.rst>`_ *(deprecated)*
 
-  Native type hints for functions should use the correct case.
+  Native type declarations for functions should use the correct case.
+- `native_type_declaration_casing <./casing/native_type_declaration_casing.rst>`_
+
+  Native type declarations should be used in the correct case.
 
 Cast Notation
 -------------
@@ -196,6 +212,9 @@ Class Notation
 - `ordered_types <./class_notation/ordered_types.rst>`_
 
   Sort union types and intersection types using configured order.
+- `phpdoc_readonly_class_comment_to_keyword <./class_notation/phpdoc_readonly_class_comment_to_keyword.rst>`_ *(risky)*
+
+  Converts readonly comment on classes to the readonly keyword.
 - `protected_to_private <./class_notation/protected_to_private.rst>`_
 
   Converts ``protected`` variables and methods to ``private`` where possible.
@@ -274,7 +293,7 @@ Control Structure
   Empty loop-condition must be in configured style.
 - `include <./control_structure/include.rst>`_
 
-  Include/Require and file path should be divided with a single space. File path should not be placed under brackets.
+  Include/Require and file path should be divided with a single space. File path should not be placed within parentheses.
 - `no_alternative_syntax <./control_structure/no_alternative_syntax.rst>`_
 
   Replace control structure alternative syntax to use braces.
@@ -287,10 +306,13 @@ Control Structure
 - `no_trailing_comma_in_list_call <./control_structure/no_trailing_comma_in_list_call.rst>`_ *(deprecated)*
 
   Remove trailing commas in list function calls.
+- `no_unneeded_braces <./control_structure/no_unneeded_braces.rst>`_
+
+  Removes unneeded braces that are superfluous and aren't part of a control structure's body.
 - `no_unneeded_control_parentheses <./control_structure/no_unneeded_control_parentheses.rst>`_
 
   Removes unneeded parentheses around control statements.
-- `no_unneeded_curly_braces <./control_structure/no_unneeded_curly_braces.rst>`_
+- `no_unneeded_curly_braces <./control_structure/no_unneeded_curly_braces.rst>`_ *(deprecated)*
 
   Removes unneeded curly braces that are superfluous and aren't part of a control structure's body.
 - `no_useless_else <./control_structure/no_useless_else.rst>`_
@@ -379,15 +401,15 @@ Function Notation
 - `nullable_type_declaration_for_default_null_value <./function_notation/nullable_type_declaration_for_default_null_value.rst>`_
 
   Adds or removes ``?`` before single type declarations or ``|null`` at the end of union types when parameters have a default ``null`` value.
-- `phpdoc_to_param_type <./function_notation/phpdoc_to_param_type.rst>`_ *(risky)*
+- `phpdoc_to_param_type <./function_notation/phpdoc_to_param_type.rst>`_ *(experimental, risky)*
 
-  EXPERIMENTAL: Takes ``@param`` annotations of non-mixed types and adjusts accordingly the function signature. Requires PHP >= 7.0.
-- `phpdoc_to_property_type <./function_notation/phpdoc_to_property_type.rst>`_ *(risky)*
+  Takes ``@param`` annotations of non-mixed types and adjusts accordingly the function signature. Requires PHP >= 7.0.
+- `phpdoc_to_property_type <./function_notation/phpdoc_to_property_type.rst>`_ *(experimental, risky)*
 
-  EXPERIMENTAL: Takes ``@var`` annotation of non-mixed types and adjusts accordingly the property signature. Requires PHP >= 7.4.
-- `phpdoc_to_return_type <./function_notation/phpdoc_to_return_type.rst>`_ *(risky)*
+  Takes ``@var`` annotation of non-mixed types and adjusts accordingly the property signature. Requires PHP >= 7.4.
+- `phpdoc_to_return_type <./function_notation/phpdoc_to_return_type.rst>`_ *(experimental, risky)*
 
-  EXPERIMENTAL: Takes ``@return`` annotation of non-mixed types and adjusts accordingly the function signature.
+  Takes ``@return`` annotation of non-mixed types and adjusts accordingly the function signature.
 - `regular_callable_call <./function_notation/regular_callable_call.rst>`_ *(risky)*
 
   Callables must be called without using ``call_user_func*`` when possible.
@@ -412,7 +434,7 @@ Import
 
 - `fully_qualified_strict_types <./import/fully_qualified_strict_types.rst>`_
 
-  Transforms imported FQCN parameters and return types in function arguments to short version.
+  Removes the leading part of fully qualified symbol references if a given symbol is imported or belongs to the current namespace.
 - `global_namespace_import <./import/global_namespace_import.rst>`_
 
   Imports or fully qualifies global classes/functions/constants.
@@ -441,6 +463,9 @@ Import
 Language Construct
 ------------------
 
+- `class_keyword <./language_construct/class_keyword.rst>`_ *(experimental, risky)*
+
+  Converts FQCN strings to ``*::class`` keywords.
 - `class_keyword_remove <./language_construct/class_keyword_remove.rst>`_ *(deprecated)*
 
   Converts ``::class`` keywords to FQCN strings.
@@ -541,9 +566,15 @@ Operator
 - `logical_operators <./operator/logical_operators.rst>`_ *(risky)*
 
   Use ``&&`` and ``||`` logical operators instead of ``and`` and ``or``.
-- `new_with_braces <./operator/new_with_braces.rst>`_
+- `long_to_shorthand_operator <./operator/long_to_shorthand_operator.rst>`_ *(risky)*
+
+  Shorthand notation for operators should be used if possible.
+- `new_with_braces <./operator/new_with_braces.rst>`_ *(deprecated)*
 
   All instances created with ``new`` keyword must (not) be followed by braces.
+- `new_with_parentheses <./operator/new_with_parentheses.rst>`_
+
+  All instances created with ``new`` keyword must (not) be followed by parentheses.
 - `no_space_around_double_colon <./operator/no_space_around_double_colon.rst>`_
 
   There must be no space around double colons (also called Scope Resolution Operator or Paamayim Nekudotayim).
@@ -606,6 +637,9 @@ PHP Tag
 PHPUnit
 -------
 
+- `php_unit_attributes <./php_unit/php_unit_attributes.rst>`_
+
+  PHPUnit attributes must be used over their respective PHPDoc-based annotations.
 - `php_unit_construct <./php_unit/php_unit_construct.rst>`_ *(risky)*
 
   PHPUnit assertion method calls like ``->assertSame(true, $foo)`` should be written with dedicated method like ``->assertTrue($foo)``.
@@ -693,10 +727,13 @@ PHPDoc
   PHPDoc should contain ``@param`` for all params.
 - `phpdoc_align <./phpdoc/phpdoc_align.rst>`_
 
-  All items of the given phpdoc tags must be either left-aligned or (by default) aligned vertically.
+  All items of the given PHPDoc tags must be either left-aligned or (by default) aligned vertically.
 - `phpdoc_annotation_without_dot <./phpdoc/phpdoc_annotation_without_dot.rst>`_
 
   PHPDoc annotation descriptions should not be a sentence.
+- `phpdoc_array_type <./phpdoc/phpdoc_array_type.rst>`_ *(risky)*
+
+  PHPDoc ``array<T>`` type must be used instead of ``T[]``.
 - `phpdoc_indent <./phpdoc/phpdoc_indent.rst>`_
 
   Docblocks should have the same indentation as the documented subject.
@@ -706,6 +743,9 @@ PHPDoc
 - `phpdoc_line_span <./phpdoc/phpdoc_line_span.rst>`_
 
   Changes doc blocks from single to multi line, or reversed. Works for class constants, properties and methods only.
+- `phpdoc_list_type <./phpdoc/phpdoc_list_type.rst>`_ *(risky)*
+
+  PHPDoc ``list`` type must be used instead of ``array`` without a key.
 - `phpdoc_no_access <./phpdoc/phpdoc_no_access.rst>`_
 
   ``@access`` annotations should be omitted from PHPDoc.
@@ -723,7 +763,7 @@ PHPDoc
   Classy that does not inherit must not have ``@inheritdoc`` tags.
 - `phpdoc_order_by_value <./phpdoc/phpdoc_order_by_value.rst>`_
 
-  Order phpdoc tags by value.
+  Order PHPDoc tags by value.
 - `phpdoc_order <./phpdoc/phpdoc_order.rst>`_
 
   Annotations in PHPDoc should be ordered in defined sequence.
@@ -821,15 +861,21 @@ Strict
 String Notation
 ---------------
 
-- `escape_implicit_backslashes <./string_notation/escape_implicit_backslashes.rst>`_
+- `escape_implicit_backslashes <./string_notation/escape_implicit_backslashes.rst>`_ *(deprecated)*
 
   Escape implicit backslashes in strings and heredocs to ease the understanding of which are special chars interpreted by PHP and which not.
 - `explicit_string_variable <./string_notation/explicit_string_variable.rst>`_
 
   Converts implicit variables into explicit ones in double-quoted strings or heredoc syntax.
+- `heredoc_closing_marker <./string_notation/heredoc_closing_marker.rst>`_
+
+  Unify ``heredoc`` or ``nowdoc`` closing marker.
 - `heredoc_to_nowdoc <./string_notation/heredoc_to_nowdoc.rst>`_
 
   Convert ``heredoc`` to ``nowdoc`` where possible.
+- `multiline_string_to_heredoc <./string_notation/multiline_string_to_heredoc.rst>`_
+
+  Convert multiline string to ``heredoc`` or ``nowdoc``.
 - `no_binary_string <./string_notation/no_binary_string.rst>`_
 
   There should not be a binary flag before strings.
@@ -842,6 +888,9 @@ String Notation
 - `single_quote <./string_notation/single_quote.rst>`_
 
   Convert double quotes to single quotes for simple strings.
+- `string_implicit_backslashes <./string_notation/string_implicit_backslashes.rst>`_
+
+  Handles implicit backslashes in strings and heredocs. Depending on the chosen strategy, it can escape implicit backslashes to ease the understanding of which are special chars interpreted by PHP and which not (``escape``), or it can remove these additional backslashes if you find them superfluous (``unescape``). You can also leave them as-is using ``ignore`` strategy.
 - `string_length_to_empty <./string_notation/string_length_to_empty.rst>`_ *(risky)*
 
   String tests for empty must be done against ``''``, not with ``strlen``.
@@ -861,7 +910,10 @@ Whitespace
 - `blank_line_between_import_groups <./whitespace/blank_line_between_import_groups.rst>`_
 
   Putting blank lines between ``use`` statement groups.
-- `compact_nullable_typehint <./whitespace/compact_nullable_typehint.rst>`_
+- `compact_nullable_type_declaration <./whitespace/compact_nullable_type_declaration.rst>`_
+
+  Remove extra spaces in a nullable type declaration.
+- `compact_nullable_typehint <./whitespace/compact_nullable_typehint.rst>`_ *(deprecated)*
 
   Remove extra spaces in a nullable typehint.
 - `heredoc_indentation <./whitespace/heredoc_indentation.rst>`_

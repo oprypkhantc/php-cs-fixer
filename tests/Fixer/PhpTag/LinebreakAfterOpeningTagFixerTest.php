@@ -91,19 +91,33 @@ $foo = $bar;
 // linebreak already present in file with Windows line endings
 '),
         ];
+
+        yield 'file with shebang' => [
+            <<<'EOD'
+                #!x
+                <?php
+                echo 1;
+                echo 2;
+                EOD,
+            <<<'EOD'
+                #!x
+                <?php echo 1;
+                echo 2;
+                EOD,
+        ];
     }
 
     /**
-     * @dataProvider provideMessyWhitespacesCases
+     * @dataProvider provideWithWhitespacesConfigCases
      */
-    public function testMessyWhitespaces(string $expected, ?string $input = null): void
+    public function testWithWhitespacesConfig(string $expected, ?string $input = null): void
     {
         $this->fixer->setWhitespacesConfig(new WhitespacesFixerConfig("\t", "\r\n"));
 
         $this->doTest($expected, $input);
     }
 
-    public static function provideMessyWhitespacesCases(): iterable
+    public static function provideWithWhitespacesConfigCases(): iterable
     {
         yield [
             "<?php\r\n\$foo = true;\n",

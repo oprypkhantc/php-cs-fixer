@@ -32,6 +32,15 @@ the order of that specific method.
 Configuration
 -------------
 
+``case_sensitive``
+~~~~~~~~~~~~~~~~~~
+
+Whether the sorting should be case sensitive.
+
+Allowed types: ``bool``
+
+Default value: ``false``
+
 ``order``
 ~~~~~~~~~
 
@@ -49,15 +58,6 @@ How multiple occurrences of same type statements should be sorted.
 Allowed values: ``'alpha'`` and ``'none'``
 
 Default value: ``'none'``
-
-``case_sensitive``
-~~~~~~~~~~~~~~~~~~
-
-Whether the sorting should be case sensitive.
-
-Allowed types: ``bool``
-
-Default value: ``false``
 
 Examples
 --------
@@ -177,7 +177,15 @@ The rule is part of the following rule sets:
 
   ``['order' => ['use_trait']]``
 
+- `@PER-CS <./../../ruleSets/PER-CS.rst>`_ with config:
+
+  ``['order' => ['use_trait']]``
+
 - `@PER-CS1.0 <./../../ruleSets/PER-CS1.0.rst>`_ with config:
+
+  ``['order' => ['use_trait']]``
+
+- `@PER-CS2.0 <./../../ruleSets/PER-CS2.0.rst>`_ with config:
 
   ``['order' => ['use_trait']]``
 
@@ -191,3 +199,10 @@ The rule is part of the following rule sets:
   ``['order' => ['use_trait']]``
 
 
+References
+----------
+
+- Fixer class: `PhpCsFixer\\Fixer\\ClassNotation\\OrderedClassElementsFixer <./../../../src/Fixer/ClassNotation/OrderedClassElementsFixer.php>`_
+- Test class: `PhpCsFixer\\Tests\\Fixer\\ClassNotation\\OrderedClassElementsFixerTest <./../../../tests/Fixer/ClassNotation/OrderedClassElementsFixerTest.php>`_
+
+The test class defines officially supported behaviour. Each test case is a part of our backward compatibility promise.

@@ -15,6 +15,7 @@ declare(strict_types=1);
 namespace PhpCsFixer\Tests\Cache;
 
 use PhpCsFixer\Cache\Cache;
+use PhpCsFixer\Cache\CacheInterface;
 use PhpCsFixer\Cache\FileHandler;
 use PhpCsFixer\Cache\Signature;
 use PhpCsFixer\Cache\SignatureInterface;
@@ -39,15 +40,6 @@ final class FileHandlerTest extends TestCase
         if (file_exists($file)) {
             unlink($file);
         }
-    }
-
-    public function testImplementsHandlerInterface(): void
-    {
-        $file = $this->getFile();
-
-        $handler = new FileHandler($file);
-
-        self::assertInstanceOf(\PhpCsFixer\Cache\FileHandlerInterface::class, $handler);
     }
 
     public function testConstructorSetsFile(): void
@@ -93,7 +85,7 @@ final class FileHandlerTest extends TestCase
 
         $cached = $handler->read();
 
-        self::assertInstanceOf(\PhpCsFixer\Cache\CacheInterface::class, $cached);
+        self::assertInstanceOf(CacheInterface::class, $cached);
         self::assertTrue($cached->getSignature()->equals($signature));
     }
 

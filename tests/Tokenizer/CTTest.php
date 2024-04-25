@@ -66,7 +66,7 @@ final class CTTest extends TestCase
      */
     public function testConstants(string $name, int $value): void
     {
-        self::assertGreaterThan(10000, $value);
+        self::assertGreaterThan(10_000, $value);
         self::assertFalse(\defined($name), 'The CT name must not use native T_* name.');
     }
 
@@ -78,14 +78,14 @@ final class CTTest extends TestCase
     }
 
     /**
-     * @return array<string,int>
+     * @return array<string, int>
      */
     private static function getConstants(): array
     {
         static $constants;
 
         if (null === $constants) {
-            $reflection = new \ReflectionClass(\PhpCsFixer\Tokenizer\CT::class);
+            $reflection = new \ReflectionClass(CT::class);
             $constants = $reflection->getConstants();
         }
 

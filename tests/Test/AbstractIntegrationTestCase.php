@@ -47,17 +47,32 @@ use Symfony\Component\Finder\SplFileInfo;
  * Example test description.
  * --RULESET--
  * {"@PSR2": true, "strict": true}
- * --CONFIG--*
+ * --CONFIG--
  * {"indent": "    ", "lineEnding": "\n"}
- * --SETTINGS--*
+ * --SETTINGS--
  * {"key": "value"} # optional extension point for custom IntegrationTestCase class
+ * --REQUIREMENTS--
+ * {"php": 70400, "php<": 80000}
  * --EXPECT--
  * Expected code after fixing
- * --INPUT--*
+ * --INPUT--
  * Code to fix
  *
- *   * Section or any line in it may be omitted.
- *  ** PHP minimum version. Default to current running php version (no effect).
+ **************
+ * IMPORTANT! *
+ **************
+ *
+ * Some sections (like `--CONFIG--`) may be omitted. The required sections are:
+ *   - `--TEST--`
+ *   - `--RULESET--`
+ *   - `--EXPECT--` (works as input too if `--INPUT--` is not provided, that means no changes are expected)
+ *
+ * The `--REQUIREMENTS--` section can define additional constraints for running (or not) the test.
+ * You can use these fields to fine-tune run conditions for test cases:
+ *   - `php` represents minimum PHP version test should be run on. Defaults to current running PHP version (no effect).
+ *   - `php<` represents maximum PHP version test should be run on. Defaults to PHP's maximum integer value (no effect).
+ *   - `os` represents operating system(s) test should be run on. Supported operating systems: Linux, Darwin and Windows.
+ *     By default test is run on all supported operating systems.
  *
  * @internal
  */
@@ -131,6 +146,20 @@ abstract class AbstractIntegrationTestCase extends TestCase
         }
 
         $this->doTest($case);
+
+        // run the test again with the `expected` part, this should always stay the same
+        $this->doTest(
+            new IntegrationCase(
+                $case->getFileName(),
+                $case->getTitle().' "--EXPECT-- part run"',
+                $case->getSettings(),
+                $case->getRequirements(),
+                $case->getConfig(),
+                $case->getRuleset(),
+                $case->getExpectedCode(),
+                null
+            )
+        );
     }
 
     /**
@@ -191,11 +220,17 @@ abstract class AbstractIntegrationTestCase extends TestCase
      */
     protected function doTest(IntegrationCase $case): void
     {
-        if (\PHP_VERSION_ID < $case->getRequirement('php')) {
-            self::markTestSkipped(sprintf('PHP %d (or later) is required for "%s", current "%d".', $case->getRequirement('php'), $case->getFileName(), \PHP_VERSION_ID));
+        $phpLowerLimit = $case->getRequirement('php');
+        if (\PHP_VERSION_ID < $phpLowerLimit) {
+            self::markTestSkipped(sprintf('PHP %d (or later) is required for "%s", current "%d".', $phpLowerLimit, $case->getFileName(), \PHP_VERSION_ID));
         }
 
-        if (!\in_array(PHP_OS, $case->getRequirement('os'), true)) {
+        $phpUpperLimit = $case->getRequirement('php<');
+        if (\PHP_VERSION_ID >= $phpUpperLimit) {
+            self::markTestSkipped(sprintf('PHP lower than %d is required for "%s", current "%d".', $phpUpperLimit, $case->getFileName(), \PHP_VERSION_ID));
+        }
+
+        if (!\in_array(PHP_OS_FAMILY, $case->getRequirement('os'), true)) {
             self::markTestSkipped(
                 sprintf(
                     'Unsupported OS (%s) for "%s", allowed are: %s.',
@@ -296,20 +331,6 @@ abstract class AbstractIntegrationTestCase extends TestCase
 
             self::assertRevertedOrderFixing($case, $fixedInputCode, $fixedInputCodeWithReversedFixers);
         }
-
-        // run the test again with the `expected` part, this should always stay the same
-        $this->testIntegration(
-            new IntegrationCase(
-                $case->getFileName(),
-                $case->getTitle().' "--EXPECT-- part run"',
-                $case->getSettings(),
-                $case->getRequirements(),
-                $case->getConfig(),
-                $case->getRuleset(),
-                $case->getExpectedCode(),
-                null
-            )
-        );
     }
 
     protected static function assertRevertedOrderFixing(IntegrationCase $case, string $fixedInputCode, string $fixedInputCodeWithReversedFixers): void
@@ -332,7 +353,7 @@ abstract class AbstractIntegrationTestCase extends TestCase
     }
 
     /**
-     * @return FixerInterface[]
+     * @return list<FixerInterface>
      */
     private static function createFixers(IntegrationCase $case): array
     {
@@ -349,7 +370,7 @@ abstract class AbstractIntegrationTestCase extends TestCase
     }
 
     /**
-     * @param Error[] $errors
+     * @param list<Error> $errors
      */
     private function implodeErrors(array $errors): string
     {

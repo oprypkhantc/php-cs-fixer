@@ -9,6 +9,14 @@ Description
 
 Rule is applied only in a PHP 7.1+ environment.
 
+Warning
+-------
+
+This rule is deprecated and will be removed in the next major version
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+You should use ``compact_nullable_type_declaration`` instead.
+
 Examples
 --------
 
@@ -23,15 +31,10 @@ Example #1
    -function sample(? string $str): ? string
    +function sample(?string $str): ?string
     {}
+References
+----------
 
-Rule sets
----------
+- Fixer class: `PhpCsFixer\\Fixer\\Whitespace\\CompactNullableTypehintFixer <./../../../src/Fixer/Whitespace/CompactNullableTypehintFixer.php>`_
+- Test class: `PhpCsFixer\\Tests\\Fixer\\Whitespace\\CompactNullableTypehintFixerTest <./../../../tests/Fixer/Whitespace/CompactNullableTypehintFixerTest.php>`_
 
-The rule is part of the following rule sets:
-
-- `@PER <./../../ruleSets/PER.rst>`_
-- `@PER-CS1.0 <./../../ruleSets/PER-CS1.0.rst>`_
-- `@PSR12 <./../../ruleSets/PSR12.rst>`_
-- `@PhpCsFixer <./../../ruleSets/PhpCsFixer.rst>`_
-- `@Symfony <./../../ruleSets/Symfony.rst>`_
-
+The test class defines officially supported behaviour. Each test case is a part of our backward compatibility promise.

@@ -21,6 +21,8 @@ use PhpCsFixer\Tests\Test\AbstractFixerTestCase;
  *
  * @internal
  *
+ * @group phpdoc
+ *
  * @covers \PhpCsFixer\Fixer\FunctionNotation\PhpdocToParamTypeFixer
  */
 final class PhpdocToParamTypeFixerTest extends AbstractFixerTestCase
@@ -30,28 +32,19 @@ final class PhpdocToParamTypeFixerTest extends AbstractFixerTestCase
      *
      * @dataProvider provideFixCases
      */
-    public function testFix(string $expected, ?string $input = null, ?int $versionSpecificFix = null, array $config = []): void
+    public function testFix(string $expected, ?string $input = null, array $config = []): void
     {
-        if (
-            null !== $input
-            && (null !== $versionSpecificFix && \PHP_VERSION_ID < $versionSpecificFix)
-        ) {
-            $expected = $input;
-            $input = null;
-        }
-
         $this->fixer->configure($config);
-
         $this->doTest($expected, $input);
     }
 
     public static function provideFixCases(): iterable
     {
-        yield 'typehint already defined' => [
+        yield 'type declaration already defined' => [
             '<?php /** @param int $foo */ function foo(int $foo) {}',
         ];
 
-        yield 'typehint already defined with wrong phpdoc typehint' => [
+        yield 'type declaration already defined with wrong phpdoc type' => [
             '<?php /** @param string $foo */ function foo(int $foo) {}',
         ];
 
@@ -190,14 +183,6 @@ final class PhpdocToParamTypeFixerTest extends AbstractFixerTestCase
                     function my_foo($bar, $baz, $tab) {}',
         ];
 
-        yield 'non-root class with mixed type of param' => [
-            '<?php
-                    /**
-                    * @param mixed $bar
-                    */
-                    function my_foo($bar) {}',
-        ];
-
         yield 'non-root namespaced class' => [
             '<?php /** @param My\Bar $foo */ function my_foo(My\Bar $foo) {}',
             '<?php /** @param My\Bar $foo */ function my_foo($foo) {}',
@@ -264,18 +249,6 @@ final class PhpdocToParamTypeFixerTest extends AbstractFixerTestCase
 
         yield 'null alone cannot be a param type' => [
             '<?php /** @param $bar null */ function my_foo($bar) {}',
-        ];
-
-        yield 'skip mixed types' => [
-            '<?php /** @param Foo|Bar $bar */ function my_foo($bar) {}',
-        ];
-
-        yield 'skip mixed types including array' => [
-            '<?php /** @param array|Foo $expected */ function testResolveIntersectionOfPaths($expected) {}',
-        ];
-
-        yield 'skip primitive or array types' => [
-            '<?php /** @param string|string[] $expected */ function testResolveIntersectionOfPaths($expected) {}',
         ];
 
         yield 'array of types' => [
@@ -351,13 +324,11 @@ final class PhpdocToParamTypeFixerTest extends AbstractFixerTestCase
         yield 'object param' => [
             '<?php /** @param object $foo */ function my_foo(object $foo) {}',
             '<?php /** @param object $foo */ function my_foo($foo) {}',
-            7_02_00,
         ];
 
         yield 'nullable and object param' => [
             '<?php /** @param null|object $foo */ function my_foo(?object $foo) {}',
             '<?php /** @param null|object $foo */ function my_foo($foo) {}',
-            7_02_00,
         ];
 
         yield 'generics with single type' => [
@@ -396,6 +367,11 @@ final class PhpdocToParamTypeFixerTest extends AbstractFixerTestCase
         yield 'array and traversable with leading slash' => [
             '<?php /** @param array|\Traversable $foo */ function my_foo(iterable $foo) {}',
             '<?php /** @param array|\Traversable $foo */ function my_foo($foo) {}',
+        ];
+
+        yield 'string array and iterable' => [
+            '<?php /** @param string[]|iterable $foo */ function my_foo(iterable $foo) {}',
+            '<?php /** @param string[]|iterable $foo */ function my_foo($foo) {}',
         ];
 
         yield 'array and traversable in a namespace' => [
@@ -446,7 +422,6 @@ final class PhpdocToParamTypeFixerTest extends AbstractFixerTestCase
         yield 'array of object and traversable' => [
             '<?php /** @param Foo[]|Traversable $foo */ function my_foo(iterable $foo) {}',
             '<?php /** @param Foo[]|Traversable $foo */ function my_foo($foo) {}',
-            7_01_00,
         ];
 
         yield 'array of object and iterable' => [
@@ -462,8 +437,13 @@ final class PhpdocToParamTypeFixerTest extends AbstractFixerTestCase
         yield 'do not fix scalar types when configured as such' => [
             '<?php /** @param int $foo */ function my_foo($foo) {}',
             null,
-            null,
             ['scalar_types' => false],
+        ];
+
+        yield 'do not fix union types when configured as such' => [
+            '<?php /** @param int|string $foo */ function my_foo($foo) {}',
+            null,
+            ['union_types' => false],
         ];
 
         yield 'do not fix function call' => [
@@ -503,6 +483,124 @@ final class PhpdocToParamTypeFixerTest extends AbstractFixerTestCase
                     /** @param Bar&Baaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaz $x */
                     function bar($x) {}
                 ',
+        ];
+
+        yield 'support for arrow function' => [
+            '<?php
+            Utils::stableSort(
+                $elements,
+                /**
+                 * @param int $a
+                 *
+                 * @return array
+                 */
+                static fn(int $a) => [$a],
+                fn($a, $b) => 1,
+            );',
+            '<?php
+            Utils::stableSort(
+                $elements,
+                /**
+                 * @param int $a
+                 *
+                 * @return array
+                 */
+                static fn($a) => [$a],
+                fn($a, $b) => 1,
+            );',
+        ];
+    }
+
+    /**
+     * @dataProvider provideFixPre80Cases
+     *
+     * @requires PHP <8.0
+     */
+    public function testFixPre80(string $expected, ?string $input = null): void
+    {
+        $this->doTest($expected, $input);
+    }
+
+    public static function provideFixPre80Cases(): iterable
+    {
+        yield 'skip mixed type of param' => [
+            '<?php
+                    /**
+                    * @param mixed $bar
+                    */
+                    function my_foo($bar) {}',
+        ];
+
+        yield 'skip union types' => [
+            '<?php /** @param Foo|Bar $bar */ function my_foo($bar) {}',
+        ];
+
+        yield 'skip union types including nullable' => [
+            '<?php /** @param string|?int $bar */ function my_foo($bar) {}',
+        ];
+
+        yield 'skip union types including array' => [
+            '<?php /** @param array|Foo $expected */ function testResolveIntersectionOfPaths($expected) {}',
+        ];
+
+        yield 'skip primitive or array union types' => [
+            '<?php /** @param string|string[] $expected */ function testResolveIntersectionOfPaths($expected) {}',
+        ];
+    }
+
+    /**
+     * @dataProvider provideFix80Cases
+     *
+     * @requires PHP 8.0
+     */
+    public function testFix80(string $expected, ?string $input = null): void
+    {
+        $this->doTest($expected, $input);
+    }
+
+    public static function provideFix80Cases(): iterable
+    {
+        yield 'non-root class with mixed type of param for php >= 8' => [
+            '<?php
+                    /**
+                    * @param mixed $bar
+                    */
+                    function my_foo(mixed $bar) {}',
+            '<?php
+                    /**
+                    * @param mixed $bar
+                    */
+                    function my_foo($bar) {}',
+        ];
+
+        yield 'union types' => [
+            '<?php /** @param Foo|Bar $bar */ function my_foo(Foo|Bar $bar) {}',
+            '<?php /** @param Foo|Bar $bar */ function my_foo($bar) {}',
+        ];
+
+        yield 'union types including nullable' => [
+            '<?php /** @param string|?int $bar */ function my_foo(string|int|null $bar) {}',
+            '<?php /** @param string|?int $bar */ function my_foo($bar) {}',
+        ];
+
+        yield 'union types including generics' => [
+            '<?php /** @param array<string, int>|string $bar */ function my_foo(array|string $bar) {}',
+            '<?php /** @param array<string, int>|string $bar */ function my_foo($bar) {}',
+        ];
+
+        yield 'fix union types including generics' => [
+            '<?php /** @param string|array<string, int> $bar */ function my_foo(string|array $bar) {}',
+            '<?php /** @param string|array<string, int> $bar */ function my_foo($bar) {}',
+        ];
+
+        yield 'union types including array' => [
+            '<?php /** @param array|Foo $expected */ function testResolveIntersectionOfPaths(array|Foo $expected) {}',
+            '<?php /** @param array|Foo $expected */ function testResolveIntersectionOfPaths($expected) {}',
+        ];
+
+        yield 'primitive or array union types' => [
+            '<?php /** @param string|string[] $expected */ function testResolveIntersectionOfPaths(string|array $expected) {}',
+            '<?php /** @param string|string[] $expected */ function testResolveIntersectionOfPaths($expected) {}',
         ];
     }
 }

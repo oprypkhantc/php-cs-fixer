@@ -26,7 +26,7 @@ final class StaticLambdaFixerTest extends AbstractFixerTestCase
     /**
      * @dataProvider provideFixCases
      */
-    public function testFix(string $expected, string $input = null): void
+    public function testFix(string $expected, ?string $input = null): void
     {
         $this->doTest($expected, $input);
     }
@@ -133,18 +133,7 @@ final class StaticLambdaFixerTest extends AbstractFixerTestCase
                     }
                 }',
         ];
-    }
 
-    /**
-     * @dataProvider provideDoNotFixCases
-     */
-    public function testDoNotFix(string $expected): void
-    {
-        $this->doTest($expected);
-    }
-
-    public static function provideDoNotFixCases(): iterable
-    {
         yield [
             '<?php
                     class A

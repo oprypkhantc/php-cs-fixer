@@ -35,7 +35,7 @@ final class TypeDeclarationSpacesFixerTest extends AbstractFixerTestCase
     }
 
     /**
-     * @return iterable<array<int, null|string>>
+     * @return iterable<array{string, 1?: ?string}>
      */
     public static function provideFixCases(): iterable
     {
@@ -353,19 +353,19 @@ class Point
     }
 
     /**
-     * @dataProvider provideFixPhp80Cases
+     * @dataProvider provideFix80Cases
      *
      * @requires PHP 8.0
      */
-    public function testFixPhp80(string $expected, string $input): void
+    public function testFix80(string $expected, string $input): void
     {
         $this->doTest($expected, $input);
     }
 
     /**
-     * @return iterable<array<int, string>>
+     * @return iterable<array{string, 1?: ?string}>
      */
-    public static function provideFixPhp80Cases(): iterable
+    public static function provideFix80Cases(): iterable
     {
         yield [
             '<?php function foo(mixed $a) {}',
@@ -402,19 +402,19 @@ class Foo
     }
 
     /**
-     * @dataProvider provideFixPhp81Cases
+     * @dataProvider provideFix81Cases
      *
      * @requires PHP 8.1
      */
-    public function testFixPhp81(string $expected, ?string $input = null): void
+    public function testFix81(string $expected, ?string $input = null): void
     {
         $this->doTest($expected, $input);
     }
 
     /**
-     * @return iterable<array<int, string>>
+     * @return iterable<array{string, 1?: ?string}>
      */
-    public static function provideFixPhp81Cases(): iterable
+    public static function provideFix81Cases(): iterable
     {
         yield [
             '<?php class Foo { private readonly int $bar; }',
@@ -428,19 +428,19 @@ class Foo
     }
 
     /**
-     * @dataProvider provideFixPhp82Cases
+     * @dataProvider provideFix82Cases
      *
      * @requires PHP 8.2
      */
-    public function testFixPhp82(string $expected, ?string $input = null): void
+    public function testFix82(string $expected, ?string $input = null): void
     {
         $this->doTest($expected, $input);
     }
 
     /**
-     * @return iterable<array<int, string>>
+     * @return iterable<array{string, 1?: ?string}>
      */
-    public static function provideFixPhp82Cases(): iterable
+    public static function provideFix82Cases(): iterable
     {
         yield [
             '<?php class Foo { public (A&B)|C $bar; }',

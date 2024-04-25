@@ -381,8 +381,7 @@ TEXT;
                 //
 
                 $d;
-                EOF
-            ,
+                EOF,
             <<<'EOF'
                 <?php
                 //class Test
@@ -590,8 +589,7 @@ use const some\Z\{ConstX,ConstY,ConstZ,};
                 $a = new Bar2();
                 $a = new Baz();
                 $a = new Qux();
-                EOF
-            ,
+                EOF,
 
             <<<'EOF'
                 <?php
@@ -613,8 +611,7 @@ use const some\Z\{ConstX,ConstY,ConstZ,};
                 $a = new Bar2();
                 $a = new Baz();
                 $a = new Qux();
-                EOF
-            ,
+                EOF,
         ];
 
         yield [
@@ -818,12 +815,6 @@ class Foo
         yield [
             "<?php\n\n\$a = new class { public function a () { while(4<1)break; while(3<1)continue; if (true) throw \$e; return 1; }};\n\n",
         ];
-
-        if (\PHP_VERSION_ID < 8_00_00) {
-            yield [
-                "<?php\n\n\$a = \$b{0};\n\n",
-            ];
-        }
     }
 
     /**
@@ -927,6 +918,26 @@ class Foo
             ['tokens' => ['square_brace_block']],
             "<?php \$c = \$b[0];\n\n\n\$a = [\n   1,\n2];\necho 1;\n\$b = [];\n\n\n//a\n",
             "<?php \$c = \$b[0];\n\n\n\$a = [\n\n   1,\n2];\necho 1;\n\$b = [];\n\n\n//a\n",
+        ];
+    }
+
+    /**
+     * @dataProvider provideFixPre80Cases
+     *
+     * @requires PHP <8.0
+     */
+    public function testFixPre80(string $expected, ?string $input = null): void
+    {
+        $this->doTest($expected, $input);
+    }
+
+    /**
+     * @return iterable<array{string, 1?: string}>
+     */
+    public static function provideFixPre80Cases(): iterable
+    {
+        yield [
+            "<?php\n\n\$a = \$b{0};\n\n",
         ];
     }
 
@@ -1118,7 +1129,7 @@ class Foo {}'
      *
      * @requires PHP 8.0
      */
-    public function testFix80(array $config, string $expected, string $input = null): void
+    public function testFix80(array $config, string $expected, ?string $input = null): void
     {
         $this->fixer->configure($config);
 
@@ -1130,11 +1141,23 @@ class Foo {}'
         yield [
             ['tokens' => ['throw']],
             '<?php
-                $a = $bar ?? throw new \Exception();
+                $nullCoalescingOperator1 = $bar ?? throw new \Exception();
 
-                $a = $bar ?? throw new \Exception();
+                $nullCoalescingOperator2 = $bar ?? throw new \Exception();
 
-                $a = $bar ?? throw new \Exception();
+                $nullCoalescingOperator3 = $bar ?? throw new \Exception();
+
+                $ternaryOperator1 = $bar ? 42 : throw new \Exception();
+
+                $ternaryOperator2 = $bar ? 42 : throw new \Exception();
+
+                $ternaryOperator3 = $bar ? 42 : throw new \Exception();
+
+                $orOperator1 = $bar || throw new \Exception();
+
+                $orOperator2 = $bar || throw new \Exception();
+
+                $orOperator3 = $bar || throw new \Exception();
             ',
         ];
 
@@ -1204,7 +1227,7 @@ function foo(){}
      *
      * @requires PHP 8.1
      */
-    public function testFix81(string $expected, string $input = null): void
+    public function testFix81(string $expected, ?string $input = null): void
     {
         $this->fixer->configure(['tokens' => ['case']]);
 

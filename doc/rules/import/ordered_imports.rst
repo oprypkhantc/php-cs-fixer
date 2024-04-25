@@ -7,15 +7,14 @@ Ordering ``use`` statements.
 Configuration
 -------------
 
-``sort_algorithm``
+``case_sensitive``
 ~~~~~~~~~~~~~~~~~~
 
-Whether the statements should be sorted alphabetically or by length, or not
-sorted.
+Whether the sorting should be case sensitive.
 
-Allowed values: ``'alpha'``, ``'length'`` and ``'none'``
+Allowed types: ``bool``
 
-Default value: ``'alpha'``
+Default value: ``false``
 
 ``imports_order``
 ~~~~~~~~~~~~~~~~~
@@ -26,14 +25,15 @@ Allowed types: ``array`` and ``null``
 
 Default value: ``null``
 
-``case_sensitive``
+``sort_algorithm``
 ~~~~~~~~~~~~~~~~~~
 
-Whether the sorting should be case sensitive.
+Whether the statements should be sorted alphabetically or by length, or not
+sorted.
 
-Allowed types: ``bool``
+Allowed values: ``'alpha'``, ``'length'`` and ``'none'``
 
-Default value: ``false``
+Default value: ``'alpha'``
 
 Examples
 --------
@@ -164,7 +164,15 @@ The rule is part of the following rule sets:
 
   ``['imports_order' => ['class', 'function', 'const'], 'sort_algorithm' => 'none']``
 
+- `@PER-CS <./../../ruleSets/PER-CS.rst>`_ with config:
+
+  ``['imports_order' => ['class', 'function', 'const'], 'sort_algorithm' => 'none']``
+
 - `@PER-CS1.0 <./../../ruleSets/PER-CS1.0.rst>`_ with config:
+
+  ``['imports_order' => ['class', 'function', 'const'], 'sort_algorithm' => 'none']``
+
+- `@PER-CS2.0 <./../../ruleSets/PER-CS2.0.rst>`_ with config:
 
   ``['imports_order' => ['class', 'function', 'const'], 'sort_algorithm' => 'none']``
 
@@ -181,3 +189,10 @@ The rule is part of the following rule sets:
   ``['imports_order' => ['class', 'function', 'const'], 'sort_algorithm' => 'alpha']``
 
 
+References
+----------
+
+- Fixer class: `PhpCsFixer\\Fixer\\Import\\OrderedImportsFixer <./../../../src/Fixer/Import/OrderedImportsFixer.php>`_
+- Test class: `PhpCsFixer\\Tests\\Fixer\\Import\\OrderedImportsFixerTest <./../../../tests/Fixer/Import/OrderedImportsFixerTest.php>`_
+
+The test class defines officially supported behaviour. Each test case is a part of our backward compatibility promise.

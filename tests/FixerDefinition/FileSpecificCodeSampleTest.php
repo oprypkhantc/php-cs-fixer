@@ -26,13 +26,6 @@ use PhpCsFixer\Tests\TestCase;
  */
 final class FileSpecificCodeSampleTest extends TestCase
 {
-    public function testImplementsFileSpecificCodeSampleInterface(): void
-    {
-        $sample = new FileSpecificCodeSample(file_get_contents(__FILE__), new \SplFileInfo(__FILE__));
-
-        self::assertInstanceOf(\PhpCsFixer\FixerDefinition\FileSpecificCodeSampleInterface::class, $sample);
-    }
-
     public function testDefaults(): void
     {
         $code = file_get_contents(__FILE__);
